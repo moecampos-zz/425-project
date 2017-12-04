@@ -30,6 +30,8 @@ Then before editing the code remember to pull the latest changes. To do this run
 git pull --rebase --prune
 ```
 
+Run the above command EVERY TIME you sit down to edit the code.
+
 To add your changes to the repository run
 
 ```bash
