@@ -8,19 +8,31 @@
 #
 
 library(leaflet)
-library(shiny)
+library(shinydashboard)
 
-# Define UI for application that draws a histogram
-ui <- shiny::bootstrapPage(
-  tags$link(rel = "stylesheet", type = "text/css",  href = 'styles.css'),
-  leaflet::leafletOutput("map", width = "100%", height = "100%"),
-  fixedPanel(id = "controls", class = "panel panel-default",
-             draggable = TRUE, top = 60, left = "auto", right = 20,
-             bottom = "auto", width = 330, height = "auto",
+header <- dashboardHeader(
+  title = "Venice Pirates!"
+)
 
-    # start of html inside side-panel
-    h2("Rental Explorer"),
-
-    plotOutput("hist_room_type", height = 200)
+body <- dashboardBody(
+  fluidRow(
+    column(width = 8,
+      box(width = NULL, solidHeader = TRUE,
+        leaflet::leafletOutput("map", height = 500)
+      )
+    ),
+    column(width = 4,
+      tabBox(
+        width = NULL,
+        tabPanel("Room Types", plotOutput('hist_room_type')),
+        tabPanel("Other Plot", "Other STuff")
+      )
+    )
   )
+)
+
+dashboardPage(
+  header,
+  dashboardSidebar(disable = TRUE),
+  body
 )
