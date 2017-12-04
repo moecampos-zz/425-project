@@ -1,10 +1,10 @@
 library(dplyr)
 library(magrittr)
-listings <- read.csv("listings.csv", header = TRUE) %>%
+listings <- read.csv("./data/listings.csv", header = TRUE) %>%
   select(-id, -name, -host_name, -last_review, -calculated_host_listings_count) %>%
-  transmute(host = host_id, nb_group = neighbourhood_group, nb = neighbourhood, 
-            lat = latitude, lon = longitude, room_type = room_type, price = price, 
-            min_nights = minimum_nights, num_reviews = number_of_reviews, 
+  transmute(host = host_id, nb_group = neighbourhood_group, nb = neighbourhood,
+            lat = latitude, lon = longitude, room_type = room_type, price = price,
+            min_nights = minimum_nights, num_reviews = number_of_reviews,
             rpm = reviews_per_month, avail = availability_365)
 
 x11()
@@ -12,9 +12,9 @@ pairs(listings[,-c(1,3)])
 
 library(gclus)
 lis <-na.omit(listings[,-c(1,2,3,6)])
-lis.r <- abs(cor(lis)) 
+lis.r <- abs(cor(lis))
 lis.col <- dmat.color(lis.r)
-lis.o <- order.single(lis.r) 
+lis.o <- order.single(lis.r)
 cpairs(lis, lis.o, panel.colors=lis.col, gap=.5,
        main="Variables Ordered and Colored by Correlation" )
 
