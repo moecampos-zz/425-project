@@ -12,7 +12,7 @@ library(shiny)
 
 # Define UI for application that draws a histogram
 ui <- shiny::bootstrapPage(
-  tags$link(rel = "stylesheet", type = "text/css",  href = 'style.css'),
+  tags$link(rel = "stylesheet", type = "text/css",  href = 'styles.css'),
   leaflet::leafletOutput("map", width = "100%", height = "100%"),
   fixedPanel(id = "controls", class = "panel panel-default",
              draggable = TRUE, top = 60, left = "auto", right = 20,
