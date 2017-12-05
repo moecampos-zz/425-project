@@ -1,0 +1,152 @@
+---
+title: "Text Analysis"
+author: "Joshua Loyal"
+date: "December 5, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+pacman::p_load(tidyverse)
+
+pacman::p_load(textcat)
+pacman::p_load(stringr)
+pacman::p_load(text2vec)
+
+pacman::p_load(glmnet)
+
+source('../R/stop_words.R')
+```
+
+```{r load_data}
+listings <- readr::read_csv('../data/listings.csv')
+reviews <- readr::read_csv('../data/reviews_with_language_textcat.csv') %>% 
+  filter(language == 'english') %>% 
+  select(-language) %>% 
+  inner_join(listings, by = c('listing_id' = 'id'))
+
+reviews
+```
+
+## Language detection
+
+I ran this code to generate the language labels:
+
+```{r language_detection, eval=FALSE}
+reviews <- reviews %>% 
+  mutate(language = textcat(comments))
+```
+
+## Text Features
+
+```{r text_preprocessing}
+# lower-case words
+prep_func <- tolower
+
+# tokenize text
+regex_pattern <- "(?u)\\b\\w\\w+\\b"
+token_func <- function(doc) {
+  str_match_all(doc, regex_pattern)
+}
+
+# remove numers
+remove_numbers <- function(words) {
+  non_numbers <- which(!str_detect(words, "\\d+"))
+  words[non_numbers]
+}
+  
+raw_documents <- reviews$comments %>% 
+  # lower-case
+  prep_func %>% 
+  # tokenize by word
+  token_func %>% 
+  # remove numbers
+  lapply(remove_numbers) %>% 
+  as.matrix()
+```
+
+```{r tfidf}
+tfidf_features <- function(X_train, X_test = NULL) {
+  # iterator over training documents
+  it_train <- itoken(X_train, 
+                     progressbar = FALSE)
+  
+  # vocabulary is created from training only
+  vocab = create_vocabulary(it_train,
+                            ngram = c(1L, 3L),
+                            stopwords = stop_words)
+
+  # prune vocabulary
+  vocab = prune_vocabulary(vocab,
+                           doc_proportion_max = 0.8,
+                           doc_proportion_min = 0.001)
+  
+  # creates a document-term matrix
+  vectorizer = vocab_vectorizer(vocab)
+
+  # instantiate tfidf model
+  tfidf = TfIdf$new()
+  
+  # fit model to train data and transform train data with fitted model
+  tfidf_train <- create_dtm(it_train, vectorizer) %>% 
+    fit_transform(tfidf)
+  
+  if (!is.null(X_test)) {
+      # iterator over test documents
+      it_test <- itoken(X_test,
+                        progressbar = FALSE)
+    
+      # transform the test documents
+      tfidf_test <- create_dtm(it_test, vectorizer) %>% 
+        transform(tfidf)
+  } else {
+    tfidf_test <- NULL
+  }
+  
+  list(train=tfidf_train, test=tfidf_test)
+}
+```
+
+```{r visualize_tfidf, echo=FALSE}
+normit <- function(x) {
+  x / max(abs(x))
+}
+
+# tf-idf feature importance. Calculated as the sum of tf-idf weights
+# per term normalized by the maximum tf-idf weight.
+dtm <- tfidf_features(raw_documents)$train
+```
+
+```{r vis}
+
+tfidf_norm <- max(abs(colSums(dtm)))
+norm_tfidf <- colSums(dtm) / tfidf_norm
+
+tibble(term = names(norm_tfidf), importance = norm_tfidf) %>% 
+  mutate(term = reorder(term, importance, abs)) %>% 
+  arrange(desc(importance)) %>% 
+  top_n(40, importance) %>% 
+  ggplot(aes(x = importance, y = term)) +
+    geom_segment(aes(x = 0, y = term, xend = importance, yend = term), color = "grey50") +
+    geom_point() +
+    loyalr::theme_pub()
+```
+
+## Fit Lasso on Text
+```{r lasso_fit, cache = TRUE}
+N_FOLDS <- 5
+
+glmnet_est <-  cv.glmnet(x = dtm, y = reviews[['price']], 
+                         family = 'gaussian', 
+                         alpha = 1,
+                         type.measure = "deviance",
+                         nfolds = N_FOLDS,
+                         thresh = 1e-3,
+                         maxit = 1e3)
+```
+
+```{r}
+coefs <- coef(glmnet_est)
+rownames(coefs)[order(coefs, decreasing = TRUE)][1:100]
+```
