@@ -11,26 +11,28 @@ library(shiny)
 library(tidyverse)
 library(leaflet)
 
-#venice <- readr::read_csv('./data/listings.csv')
-
 # data cleaning. This loads listings data.frame with the data
 source('./R/cleaning.R', local = TRUE)
+source('./R/spatial.R', local = TRUE)
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  # holds the current position used for querying
+  current_position <- reactiveValues(lat = NA, lon = NA)
+  
+  # Reactive expression for the data subsetted to what the user selected
   rentalsInBounds <- reactive({
-    if (is.null(input$map_bounds)) {
-      return(listings[FALSE,])
-    }
-    bounds <- input$map_bounds
-    lat_range <- range(bounds$north, bounds$south)
-    lon_range <- range(bounds$east, bounds$west)
-
-    listings %>%
-      filter(lat >= lat_range[1] & lat <= lat_range[2] &
-          lon >= lon_range[1] & lon <= lon_range[2])
+    coords <- listings %>% 
+      select(lon, lat)
+    
+    selected_points <- within_radius(
+      lat = current_position$lat, lon = current_position$lon, coords,
+      radius = input$search_radius * 1000)
+    
+    listings[selected_points, ]
   })
-
+  
+  # Make the intial map
   output$map <- renderLeaflet({
     leaflet(data = listings) %>%
       addTiles() %>%
@@ -39,7 +41,8 @@ server <- function(input, output, session) {
       addMarkers(~lon, ~lat,
         clusterOptions = markerClusterOptions())
   })
-
+ 
+  # an example of how to render a plot on selected data 
   output$hist_room_type <- renderPlot({
     if (nrow(rentalsInBounds()) == 0) {
       return(NULL)
@@ -47,7 +50,58 @@ server <- function(input, output, session) {
 
     ggplot(rentalsInBounds(), aes(x = room_type)) +
       geom_bar(fill = 'steelblue', color = 'steelblue') +
-      coord_flip() +
-      loyalr::theme_pub()
+      coord_flip()
+  })
+ 
+  # for debugging I included the data table to make sure the selection makes 
+  # sense 
+  output$view_data <- DT::renderDataTable(
+    rentalsInBounds(),
+    options = list(scrollX = TRUE)
+  )
+  
+  # observe mouse clicks and add a circle (radius in meters)
+  observeEvent(input$map_click, {
+    clicked <- input$map_click
+    current_position$lat <- clicked$lat
+    current_position$lon <- clicked$lng
+    
+    leafletProxy('map') %>% 
+      # delete old circle
+      clearGroup(group = 'circles') %>% 
+      addCircles(lng = current_position$lon, lat = current_position$lat, group = 'circles',
+                 weight = 1, radius = input$search_radius * 1000, 
+                 color = 'black', fillColor = 'orange',
+                 fillOpacity = 0.5, opacity = 1)
+  })
+  
+  # observe a change in the radius of the circle
+  observeEvent(input$search_radius, {
+    if (is.na(current_position$lat) || is.na(current_position$lon)) {
+      return()
+    }
+    
+    leafletProxy('map') %>% 
+      # delete old circle
+      clearGroup(group = 'circles') %>% 
+      addCircles(lng = current_position$lon, lat = current_position$lat, 
+        group = 'circles', 
+        weight = 1, radius = input$search_radius * 1000, 
+        color = 'black', fillColor = 'orange',
+        fillOpacity = 0.5, opacity = 1)
+  })
+ 
+  # observe an event to clear the shape when clicked on 
+  observeEvent(input$map_shape_click, {
+    click <- input$map_shape_click
+    
+    if (is.null(click$group)) {
+      return()
+    }
+    
+    if (click$group == 'circles') {
+      leafletProxy('map') %>% 
+        clearGroup(group = 'circles') 
+    }
   })
 }
