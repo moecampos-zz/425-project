@@ -15,6 +15,9 @@ header <- dashboardHeader(
 )
 
 body <- dashboardBody(
+  tags$head(
+    tags$link(rel = "stylesheet", type = "text/css", href = "styles.css")
+  ),
   fluidRow(
     column(width = 8,
       box(width = NULL, solidHeader = TRUE,
@@ -22,10 +25,19 @@ body <- dashboardBody(
       )
     ),
     column(width = 4,
+      sliderInput('search_radius', 'Radius (km)',
+                  min = 1, max = 10, value = 1, step = 1),
       tabBox(
         width = NULL,
         tabPanel("Room Types", plotOutput('hist_room_type')),
         tabPanel("Other Plot", "Other STuff")
+      )
+    )
+  ),
+  fluidRow(
+    column(width = 8,
+      box(width = NULL,
+          DT::dataTableOutput('view_data')
       )
     )
   )
