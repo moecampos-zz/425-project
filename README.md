@@ -33,7 +33,16 @@ git pull --rebase --prune
 
 Run the above command EVERY TIME you sit down to edit the code.
 
-To add your changes to the repository run
+Once you are satisfied with the changes you have made you need to commit your code. To do this
+run the following command
+
+```bash
+git commit -am 'my awesome changes'
+```
+
+Where should replace 'my awesome changes' with a description of what you did.
+
+This commit only exists locally though. To add your changes to the repository run
 
 ```bash
 git push origin master
