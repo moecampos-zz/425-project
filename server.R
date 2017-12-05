@@ -17,14 +17,16 @@ source('./R/spatial.R', local = TRUE)
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  # holds the current position used for querying
+  current_position <- reactiveValues(lat = NA, lon = NA)
+  
   # Reactive expression for the data subsetted to what the user selected
-  rentalsInBounds <- eventReactive(input$map_click, {
-    clicked <- input$map_click
+  rentalsInBounds <- reactive({
     coords <- listings %>% 
       select(lon, lat)
     
     selected_points <- within_radius(
-      lat = clicked$lat, lon = clicked$lng, coords,
+      lat = current_position$lat, lon = current_position$lon, coords,
       radius = input$search_radius * 1000)
     
     listings[selected_points, ]
@@ -39,7 +41,8 @@ server <- function(input, output, session) {
       addMarkers(~lon, ~lat,
         clusterOptions = markerClusterOptions())
   })
-  
+ 
+  # an example of how to render a plot on selected data 
   output$hist_room_type <- renderPlot({
     if (nrow(rentalsInBounds()) == 0) {
       return(NULL)
@@ -49,7 +52,9 @@ server <- function(input, output, session) {
       geom_bar(fill = 'steelblue', color = 'steelblue') +
       coord_flip()
   })
-  
+ 
+  # for debugging I included the data table to make sure the selection makes 
+  # sense 
   output$view_data <- DT::renderDataTable(
     rentalsInBounds(),
     options = list(scrollX = TRUE)
@@ -58,15 +63,45 @@ server <- function(input, output, session) {
   # observe mouse clicks and add a circle (radius in meters)
   observeEvent(input$map_click, {
     clicked <- input$map_click
-    clicked_lat <- clicked$lat
-    clicked_lng <- clicked$lng
+    current_position$lat <- clicked$lat
+    current_position$lon <- clicked$lng
     
     leafletProxy('map') %>% 
       # delete old circle
       clearGroup(group = 'circles') %>% 
-      addCircles(lng = clicked_lng, lat = clicked_lat, group = 'circles',
+      addCircles(lng = current_position$lon, lat = current_position$lat, group = 'circles',
                  weight = 1, radius = input$search_radius * 1000, 
                  color = 'black', fillColor = 'orange',
                  fillOpacity = 0.5, opacity = 1)
+  })
+  
+  # observe a change in the radius of the circle
+  observeEvent(input$search_radius, {
+    if (is.na(current_position$lat) || is.na(current_position$lon)) {
+      return()
+    }
+    
+    leafletProxy('map') %>% 
+      # delete old circle
+      clearGroup(group = 'circles') %>% 
+      addCircles(lng = current_position$lon, lat = current_position$lat, 
+        group = 'circles', 
+        weight = 1, radius = input$search_radius * 1000, 
+        color = 'black', fillColor = 'orange',
+        fillOpacity = 0.5, opacity = 1)
+  })
+ 
+  # observe an event to clear the shape when clicked on 
+  observeEvent(input$map_shape_click, {
+    click <- input$map_shape_click
+    
+    if (is.null(click$group)) {
+      return()
+    }
+    
+    if (click$group == 'circles') {
+      leafletProxy('map') %>% 
+        clearGroup(group = 'circles') 
+    }
   })
 }
