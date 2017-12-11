@@ -7,8 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-library(leaflet)
-library(shinydashboard)
+source('/header.R')
 
 header <- dashboardHeader(
   title = "Venice Pirates!"

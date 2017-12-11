@@ -1,8 +1,8 @@
+source('/header.R')
 source('./clearning.R', local = TRUE)
 
 pairs(listings[,-c(1,3)])
 
-library(gclus)
 lis <-na.omit(listings[,-c(1,2,3,6)])
 lis.r <- abs(cor(lis))
 lis.col <- dmat.color(lis.r)
@@ -18,7 +18,6 @@ sum(sort(abs(rstudent(mod1)), decreasing = T) > qt(1-0.05/(6027*2), 6021))
 cook <- cooks.distance(mod1)
 sort(abs(cook), decreasing = T)[1:5]
 
-library(leaps)
 b <- regsubsets(price ~ avail + num_reviews + min_nights + lat + lon, data = listings)
 rs <- summary(b)
 rs$which

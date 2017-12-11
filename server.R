@@ -7,9 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
-library(tidyverse)
-library(leaflet)
+source('/header.R')
 
 # data cleaning. This loads listings data.frame with the data
 source('./R/cleaning.R', local = TRUE)
