@@ -1,6 +1,9 @@
 library(dplyr)
 library(magrittr)
 
+#Code for Austin because he can never remember how to get the code loaded, no matter how many times he tries
+#setwd("C:/Users/Austin/425-project")
+
 listings <- read.csv("./data/listings.csv", header = TRUE) %>%
   select(-id, -name, -host_name, -last_review, -calculated_host_listings_count) %>%
   transmute(host = host_id, nb_group = neighbourhood_group, nb = neighbourhood,
