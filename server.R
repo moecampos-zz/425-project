@@ -6,16 +6,18 @@
 #
 #    http://shiny.rstudio.com/
 #
-
-source('./header.R')
+library(here)
+library(leaflet)
+library(shiny)
+library(tidyverse)
 
 # data cleaning. This loads listings data.frame with the data
-source('./R/cleaning.R', local = TRUE)
-source('./R/spatial.R', local = TRUE)
-source('./R/text_model.R', local = TRUE)
+source(here("R", "cleaning.R"), local = TRUE)
+source(here("R", "spatial.R"), local = TRUE)
+source(here("R", "text_model.R"), local = TRUE)
 
 # load models
-text_model <- readRDS('./data/text_model.rds')
+text_model <- readRDS(here("data", "text_model.rds"))
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {

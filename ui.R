@@ -6,14 +6,18 @@
 #
 #    http://shiny.rstudio.com/
 #
+library(here)
+library(leaflet)
+library(shiny)
+library(shinydashboard)
 
-source('./header.R')
+source(here('header.R'), local = TRUE)
 
-source('./R/cleaning.R', local = TRUE)
-source('./R/text_model.R', local = TRUE)
+source(here("R", "cleaning.R"), local = TRUE)
+source(here("R", "text_model.R"), local = TRUE)
 
 # load models
-text_model <- readRDS('./data/text_model.rds')
+text_model <- readRDS(here("data", "text_model.rds"))
 
 header <- dashboardHeader(
   title = "Venice Pirates!"

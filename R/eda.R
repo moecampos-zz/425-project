@@ -1,5 +1,8 @@
-source('./header.R')
-source('./clearning.R', local = TRUE)
+library(here)
+library(gclus)
+library(leaps)
+
+source(here("R", "cleaning.R"), local = TRUE)
 
 pairs(listings[,-c(1,3)])
 

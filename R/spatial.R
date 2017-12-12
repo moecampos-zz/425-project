@@ -1,4 +1,4 @@
-source('./header.R')
+library(geosphere)
 
 within_radius <- function(lon, lat, coordinates, radius = 1000) {
   point <- cbind(lon, lat)
