@@ -20,7 +20,7 @@ Once we have decided to use neighborhoods as our geographical predictor, we face
 
 To reduce the number of levels of the neighborhood variable, we will cluster neighborhoods. The Airbnb website lists nine major neighborhoods, "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." We therefore re-coded the neighborhood factor levels to be these nine neighborhoods along with a level for "not in a major neighborhood." Indeed, these nine neighborhoods account for 81.5% of listings. 
 
-```{r cars}
+```{}
 
 ```
 

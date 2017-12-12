@@ -30,38 +30,27 @@ rs$which
 
 
 #let's consider how to bring down the number of factors in nb (without losing usefulness)
-length(listings$nb)
-isole <- listings$nb[listings$nb_group =="Isole"] #neighborhoods on the island
-length(isole) #5000 / 6000 listings are on the island
-isole2 <- isole[isole!="San Marco"]
-length(isole2) 
-isole3 <- isole2[isole2 != "Castello"]
-length(isole3) 
-isole4 <- isole3[isole3 != "Cannaregio"]
-length(isole4) 
-isole5 <- isole4[isole4 != "Dorsoduro"]
-length(isole5) 
-isole6 <- isole5[isole5 != "Giudecca"]
-length(isole6)
-isole7 <- isole6[isole6 != "Lido"]
-length(isole7)
-#first 7 neighborhoods encompass 2/3 of the listings, will this be enough?
-big6Neighborhoods <- c("San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido")
+
+#first 9 neighborhoods encompass 2/3 of the listings, will this be enough?
+bigNineNeighborhoods <- c("San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", "San Polo")
 list <- as.character(listings$nb)
 for (i in 1:length(listings$nb)){
-  if (!(list[i] %in% big6Neighborhoods)){
+  if (!(list[i] %in% bigNineNeighborhoods)){
     list[i] <- as.factor(0)
   }
 }
 list <- as.factor(list)
+length(list[list!=1]) #counterintuitive that '0' codes as '1', but it does
+(length(listings$nb) - length(list[list!=1])) / length(listings$nb)
 
-#taking out nb here drops R^2 by about 0.04. Not a rigorous analysis, but maybe nb won't be worth keeping anyway
-mod2 <- lm(price ~ avail + num_reviews + min_nights + lat + lon + nb + nb_group, data = listings)
-summary(mod2)
-mod3 <- lm(price ~ avail + num_reviews + min_nights + lat + lon +  nb_group, data = listings)
-summary(mod3)
-#Using the big 6 neighborhoods improves R^2 here by 0.01, not substantial. Can do better
-mod4 <- lm(price ~ avail + num_reviews + min_nights + lat + lon +  list + nb_group, data = listings)
-summary(mod4)
+#Using the big 9 neighborhoods
+mod5 <- lm(listings$price ~ list)
+summary(mod5)
+##THIS MODEL GIVES THE MEAN PREDICTED NEIGHBORHOOD PRICES
+
+
+
+
+
 
 
