@@ -12,12 +12,9 @@ library(shiny)
 library(shinydashboard)
 
 
-
 source(here("R", "cleaning.R"), local = TRUE)
 source(here("R", "text_model.R"), local = TRUE)
 
-# load models
-text_model <- readRDS(here("data", "text_model.rds"))
 
 header <- dashboardHeader(
   title = "Venice Pirates!"
@@ -30,13 +27,13 @@ body <- dashboardBody(
   fluidRow(
     column(width = 6,
       sliderInput('search_radius', 'Radius (km)',
-                  min = 1, max = 10, value = 1, step = 1),
+                  min = 0.1, max = 2, value = 0.1, step = 0.1),
       box(width = NULL, solidHeader = TRUE,
         leaflet::leafletOutput("map", height = 500))
     ),
     column(width = 6,
       selectInput("neighborhood", "Neighborhood:",
-                  choices = text_model$neighborhoods),
+                  choices = bigNineNeighborhoods),
       tabBox(
         width = NULL, height = 500,
         tabPanel("Important Terms", plotOutput('word_cloud', height = 500)),

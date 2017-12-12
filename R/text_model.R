@@ -1,5 +1,6 @@
 library(wordcloud)
 library(tidyverse)
+library(text2vec)
 
 
 top_n_coefs <- function(coefs, n = NULL) {
