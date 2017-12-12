@@ -1,0 +1,62 @@
+---
+title: "Considerations for the Modern Pirate: Venice"
+author: "Mauricio Campos, Josh Loyal, Austin Jay Warner"
+date: "December 11, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include = FALSE}
+library(knitr)
+library(gclus)
+library(leaps)
+library(geosphere)
+library(leaflet)
+library(shinydashboard)
+library(shiny)
+library(tidyverse)
+```
+
+```{r echo=FALSE}
+source("C:/Users/Austin/425-project/R/cleaning.R")
+```
+How to use source()? 
+
+``{r echo=FALSE}
+source('./header.R')
+source('./clearning.R')
+source('./eda.R')
+```
+
+``{}
+listings[1,]
+```
+##Data Summary and Preparation
+
+Intuitively, the location of a listing will have a large impact on the pricing in a predictive sense. Our data gives us several ways of measuring the location of a listing: the neighborhood of the listing, the neighborhood group of the listing, the latitude, and the longitude. These covariates are strongly correlated and so we decide to remove some of these predictors. The most interpretable of these covariates are neighborhood and neighborhood group. Since a given neighborhood is either on the island or mainland, it is sufficient to consider neighborhoods. 
+
+Once we have decided to use neighborhoods as our geographical predictor, we face the challenge of scale. The neighborhood predictor, as a categorical variable, has 56 levels, which is simply too many levels for the classical techniques that we have studied throughout the semester in STAT425. 
+
+To reduce the number of levels of the neighborhood variable, we will cluster neighborhoods. The Airbnb website lists nine major neighborhoods, "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." We therefore re-coded the neighborhood factor levels to be these nine neighborhoods along with a level for "not in a major neighborhood." Indeed, these nine neighborhoods account for 81.5% of listings. 
+
+``{r fig1, fig.height=3, fig.width = 5, echo=FALSE, fig.cap="L"}
+plot((list), listings$price, ylim = c(0,1000))
+```
+
+##Review Text Analysis
+
+##Modelling Listing Price
+
+The neighborhood factor is significant. 
+
+##Find a Pretty Pillageable Party Palace Place/Pagoda for Parsimonious Plodding Pandering Pirates
+
+\section{Predicting Luxury}
+
+
+
