@@ -12,6 +12,10 @@ source('/header.R')
 # data cleaning. This loads listings data.frame with the data
 source('./R/cleaning.R', local = TRUE)
 source('./R/spatial.R', local = TRUE)
+source('./R/text_model.R', local = TRUE)
+
+# load models
+text_model <- readRDS('./data/text_model.rds')
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
@@ -20,7 +24,8 @@ server <- function(input, output, session) {
   
   # Reactive expression for the data subsetted to what the user selected
   rentalsInBounds <- reactive({
-    coords <- listings %>% 
+    coords <- listings %>%
+      filter(nb == input$neighborhood) %>% 
       select(lon, lat)
     
     selected_points <- within_radius(
@@ -36,7 +41,7 @@ server <- function(input, output, session) {
       addTiles() %>%
       fitBounds(~min(lon), ~min(lat),
                 ~max(lon), ~max(lat)) %>%
-      addMarkers(~lon, ~lat,
+      addMarkers(~lon, ~lat, group = 'markers',
         clusterOptions = markerClusterOptions())
   })
  
@@ -49,6 +54,10 @@ server <- function(input, output, session) {
     ggplot(rentalsInBounds(), aes(x = room_type)) +
       geom_bar(fill = 'steelblue', color = 'steelblue') +
       coord_flip()
+  })
+  
+  output$word_cloud <- renderPlot({
+    plot(text_model, input$neighborhood)
   })
  
   # for debugging I included the data table to make sure the selection makes 
@@ -73,6 +82,16 @@ server <- function(input, output, session) {
                  fillOpacity = 0.5, opacity = 1)
   })
   
+  # observe a change in the neighborhood group
+  observeEvent(input$neighborhood, {
+    nb <- listings %>% 
+      filter(nb == input$neighborhood)
+    
+    leafletProxy('map') %>% 
+      clearGroup(group = 'markers') %>% 
+      addMarkers(nb$lon, nb$lat, group = 'markers',
+        clusterOptions = markerClusterOptions())
+  })
   # observe a change in the radius of the circle
   observeEvent(input$search_radius, {
     if (is.na(current_position$lat) || is.na(current_position$lon)) {
