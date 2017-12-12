@@ -51,6 +51,8 @@ mod5 <- lm(listings$price ~ list)
 summary(mod5)
 ##THIS MODEL GIVES THE MEAN PREDICTED NEIGHBORHOOD PRICES
 
+plot(as.factor(list), listings$price)
+
 
 
 

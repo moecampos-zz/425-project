@@ -11,7 +11,7 @@ library(leaflet)
 library(shiny)
 library(shinydashboard)
 
-source(here('header.R'), local = TRUE)
+
 
 source(here("R", "cleaning.R"), local = TRUE)
 source(here("R", "text_model.R"), local = TRUE)
