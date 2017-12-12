@@ -1,0 +1,33 @@
+---
+title: "Considerations for the Modern Pirate: Venice"
+author: "Mauricio Campos, Josh Loyal, Austin Jay Warner"
+date: "December 11, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+\section{Data Summary and Preparation}
+
+```{r cars}
+summary(cars)
+```
+
+\section{Review Text Analysis}
+
+\section{Modelling Listing Price}
+
+\section{Find a Pretty Pillageable Party Place for Plodding Pandering Pirates}
+
+\section{Predicting Luxury}
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
