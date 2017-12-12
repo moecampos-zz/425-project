@@ -1,24 +1,27 @@
 source('./R/cleaning.R')
 library(magrittr)
+library(MASS)
 
-listings$pq <- 1
-listings$pq[listings$price > 92 & listings$price <= 120] <- 2
-listings$pq[listings$price > 120 & listings$price <= 160] <- 3
-listings$pq[listings$price > 160] <- 4
+bc <- boxcox(lm(price ~ avail + num_reviews + rpm + nb + room_type, 
+          data = listings), lambda = seq(-0.5,0,by = 0.01))
+bc$x[bc$y == max(bc$y)]
+#I'll use a lambda of -0.4 since it lies in the CI
 
-mod1 <- lm(price ~ avail + num_reviews + rpm + min_nights + nb + room_type, 
-           data = listings)
+listings %<>% mutate(price.bc = price^-0.4)
+
+mod1 <- lm(price.bc ~ avail + num_reviews + rpm + nb + room_type, 
+           data = listings) #Best AIC and BIC model
 summary(mod1)
+drop1(mod1, test = "F")
 
-mod2 <- lm(price ~ avail + rpm + min_nights + nb + room_type, 
-           data = listings)
-summary(mod2)
 
 ####Diagnostics####
+plot(mod1, which = 1:6)
+
 n <- nrow(listings)
 p <- length(mod1$coefficients)
 
-plot(mod1)
+plot(mod1, which = 5)
 abline(v = 2*p/n, col = "blue", lty = 3)
 
 num.out <- sum(sort(abs(rstudent(mod1)), decreasing = T) > qt(1-0.05/(n*2), n-p))
@@ -27,10 +30,22 @@ listings[outliers,c("avail","num_reviews","rpm","min_nights","nb","room_type","p
 
 cook <- cooks.distance(mod1)
 sort(abs(cook), decreasing = T)[1:5]
+plot(mod1, which = 4)
 
 hat <- hatvalues(mod1)
-
 length(hat[hat > 2*p/n])
+hat[c(1902,4640)] > 2*p/n
+
+#Observations 1902 and 4640 are outliers with high leverage values.
+#They also have the highest two Cook's Distance values
+
+listings[c(1902,4640),c("price", "price.bc", "avail", "num_reviews", 
+"rpm", "nb","room_type")]
+
+mod2 <- lm(price.bc ~ avail + num_reviews + rpm + nb + room_type, 
+           data = listings[-c(1902,4640),])
+summary(mod2)
+drop1(mod2, test = "F")
 
 ####Random Forest####
 

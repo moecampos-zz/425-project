@@ -3,7 +3,8 @@ source('./R/cleaning.R')
 og <- ls()
 
 X <- listings[,c("avail","num_reviews","rpm","min_nights","nb","room_type")]
-Y <- listings[,"price"]
+#Y <- listings[,"price"]
+Y <- listings[,"price"]^-0.4
 
 b0 <- BIC(lm(Y~1))
 a0 <- AIC(lm(Y~1))
