@@ -12,12 +12,9 @@ library(shiny)
 library(shinydashboard)
 
 
-
 source(here("R", "cleaning.R"), local = TRUE)
 source(here("R", "text_model.R"), local = TRUE)
 
-# load models
-text_model <- readRDS(here("data", "text_model.rds"))
 
 header <- dashboardHeader(
   title = "Venice Pirates!"
@@ -36,7 +33,7 @@ body <- dashboardBody(
     ),
     column(width = 6,
       selectInput("neighborhood", "Neighborhood:",
-                  choices = text_model$neighborhoods),
+                  choices = bigNineNeighborhoods),
       tabBox(
         width = NULL, height = 500,
         tabPanel("Important Terms", plotOutput('word_cloud', height = 500)),
