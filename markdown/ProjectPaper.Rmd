@@ -12,22 +12,29 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-\section{Data Summary and Preparation}
+##Data Summary and Preparation
+
+Intuitively, the location of a listing will have a large impact on the pricing in a predictive sense. Our data gives us several ways of measuring the location of a listing: the neighborhood of the listing, the neighborhood group of the listing, the latitude, and the longitude. These covariates are strongly correlated and so we decide to remove some of these predictors. The most interpretable of these covariates are neighborhood and neighborhood group. Since a given neighborhood is either on the island or mainland, it is sufficient to consider neighborhoods. 
+
+Once we have decided to use neighborhoods as our geographical predictor, we face the challenge of scale. The neighborhood predictor, as a categorical variable, has 56 levels, which is simply too many levels for the classical techniques that we have studied throughout the semester in STAT425. 
+
+To reduce the number of levels of the neighborhood variable, we will cluster neighborhoods. The Airbnb website lists nine major neighborhoods, "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." We therefore re-coded the neighborhood factor levels to be these nine neighborhoods along with a level for "not in a major neighborhood." Indeed, these nine neighborhoods account for 81.5% of listings. 
 
 ```{r cars}
-summary(cars)
+
 ```
 
-\section{Review Text Analysis}
+##Review Text Analysis
 
-\section{Modelling Listing Price}
+##Modelling Listing Price
 
-\section{Find a Pretty Pillageable Party Place for Plodding Pandering Pirates}
+The neighborhood factor is significant. 
+
+##Find a Pretty Pillageable Party Palace Place/Pagoda for Parsimonious Plodding Pandering Pirates
 
 \section{Predicting Luxury}
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
