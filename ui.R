@@ -27,7 +27,7 @@ body <- dashboardBody(
   fluidRow(
     column(width = 6,
       sliderInput('search_radius', 'Radius (km)',
-                  min = 1, max = 10, value = 1, step = 1),
+                  min = 0.1, max = 2, value = 0.1, step = 0.1),
       box(width = NULL, solidHeader = TRUE,
         leaflet::leafletOutput("map", height = 500))
     ),
