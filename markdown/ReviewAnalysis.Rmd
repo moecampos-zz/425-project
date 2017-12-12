@@ -13,7 +13,9 @@ pacman::p_load(tidyverse)
 pacman::p_load(textcat)
 pacman::p_load(stringr)
 pacman::p_load(text2vec)
-
+pacman::p_load(parallel)
+pacman::p_load(foreach)
+pacman::p_load(doMC)
 pacman::p_load(glmnet)
 
 source('../R/stop_words.R')
@@ -29,13 +31,25 @@ reviews <- readr::read_csv('../data/reviews_with_language_textcat.csv') %>%
 reviews
 ```
 
+```{r filter_by_neighborhoods}
+# This is a quick placeholder that takes the top 9 neighborhoods by frequency
+top_nbh <- listings %>% 
+  group_by(neighbourhood) %>% 
+  summarise(n = n()) %>% 
+  arrange(desc(n)) %>% 
+  head(9) 
+  
+reviews <- reviews %>% 
+  filter(neighbourhood %in% top_nbh$neighbourhood) %>% 
+  mutate(neighbourhood = as.factor(neighbourhood))
+```
 ## Language detection
 
 I ran this code to generate the language labels:
 
 ```{r language_detection, eval=FALSE}
 reviews <- reviews %>% 
-  mutate(language = textcat(comments))
+  mutate(language = textcat(comments)) 
 ```
 
 ## Text Features
@@ -74,7 +88,7 @@ tfidf_features <- function(X_train, X_test = NULL) {
   
   # vocabulary is created from training only
   vocab = create_vocabulary(it_train,
-                            ngram = c(1L, 3L),
+                            ngram = c(1L, 2L),
                             stopwords = stop_words)
 
   # prune vocabulary
@@ -119,7 +133,6 @@ dtm <- tfidf_features(raw_documents)$train
 ```
 
 ```{r vis}
-
 tfidf_norm <- max(abs(colSums(dtm)))
 norm_tfidf <- colSums(dtm) / tfidf_norm
 
@@ -137,8 +150,9 @@ tibble(term = names(norm_tfidf), importance = norm_tfidf) %>%
 ```{r lasso_fit, cache = TRUE}
 N_FOLDS <- 5
 
-glmnet_est <-  cv.glmnet(x = dtm, y = reviews[['price']], 
-                         family = 'gaussian', 
+doMC::registerDoMC(cores = parallel::detectCores())
+glmnet_est <-  cv.glmnet(x = dtm, y = reviews$neighbourhood, 
+                         family = 'multinomial', 
                          alpha = 1,
                          type.measure = "deviance",
                          nfolds = N_FOLDS,
@@ -146,7 +160,10 @@ glmnet_est <-  cv.glmnet(x = dtm, y = reviews[['price']],
                          maxit = 1e3)
 ```
 
-```{r}
-coefs <- coef(glmnet_est)
-rownames(coefs)[order(coefs, decreasing = TRUE)][1:100]
+```{r multinomial_lasso_perf}
+plot(glmnet_est)
+```
+
+```{r coefficients}
+text_model <- init_text_model(glmnet_est, levels(reviews$neighborhoods))
 ```
