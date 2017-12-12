@@ -1,4 +1,4 @@
-source('/header.R')
+source('./header.R')
 source('./clearning.R', local = TRUE)
 
 pairs(listings[,-c(1,3)])

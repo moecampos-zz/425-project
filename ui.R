@@ -7,7 +7,7 @@
 #    http://shiny.rstudio.com/
 #
 
-source('/header.R')
+source('./header.R')
 
 source('./R/cleaning.R', local = TRUE)
 source('./R/text_model.R', local = TRUE)

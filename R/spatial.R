@@ -1,4 +1,4 @@
-source('/header.R')
+source('./header.R')
 
 within_radius <- function(lon, lat, coordinates, radius = 1000) {
   point <- cbind(lon, lat)
