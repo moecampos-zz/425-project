@@ -78,7 +78,7 @@ tfidf_features <- function(X_train, X_test = NULL) {
   
   # vocabulary is created from training only
   vocab = create_vocabulary(it_train,
-                            ngram = c(1L, 2L),
+                            ngram = c(2L, 3L),
                             stopwords = stop_words)
 
   # prune vocabulary
@@ -156,5 +156,5 @@ plot(glmnet_est)
 
 ```{r coefficients}
 text_model <- init_text_model(glmnet_est, levels(reviews$nb))
-saveRDS(text_model, here('data', 'text_model.rds'))
+saveRDS(text_model, here('data', 'text_model3.rds'))
 ```
