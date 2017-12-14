@@ -10,6 +10,7 @@ library(here)
 library(leaflet)
 library(shiny)
 library(shinydashboard)
+library(tidyverse)
 
 
 source(here("R", "cleaning.R"), local = TRUE)
@@ -37,7 +38,8 @@ body <- dashboardBody(
       tabBox(
         width = NULL, height = 500,
         tabPanel("Important Terms", plotOutput('word_cloud', height = 500)),
-        tabPanel("Room Types", plotOutput('hist_room_type', height = 500))
+        tabPanel("Room Types", plotOutput('hist_room_type', height = 500)),
+        tabPanel("Predicted Prices", plotOutput('fit_hist', heigh = 500))
       )
     )
   )

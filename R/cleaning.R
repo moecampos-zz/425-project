@@ -9,7 +9,7 @@ bigNineNeighborhoods <- c("San Marco", "Castello", "Cannaregio", "Dorsoduro",
                           "San Polo")
 
 listings_with_id <- read.csv(here("data", "listings.csv"), header = TRUE) %>%
-  select(-name, -host_name, -last_review, -calculated_host_listings_count) %>%
+  dplyr::select(-name, -host_name, -last_review, -calculated_host_listings_count) %>%
   transmute(id = id, host = host_id, nb = neighbourhood, 
             lat = latitude, lon = longitude, 
             room_type = room_type, price = price, min_nights = minimum_nights, 
@@ -21,4 +21,5 @@ listings_with_id[is.na(listings_with_id)] <- 0
 listings_with_id$nb <- droplevels(listings_with_id$nb)
 
 listings <- listings_with_id %>% 
-  select(-id)
+  dplyr::select(-id) %>%
+  mutate(price.bc = price^-0.4)

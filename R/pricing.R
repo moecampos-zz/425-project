@@ -2,6 +2,8 @@ source('./R/cleaning.R')
 library(magrittr)
 library(MASS)
 
+og <- ls()
+
 bc <- boxcox(lm(price ~ avail + num_reviews + rpm + nb + room_type, 
           data = listings), lambda = seq(-0.5,0,by = 0.01))
 bc$x[bc$y == max(bc$y)]
@@ -50,7 +52,16 @@ drop1(mod2, test = "F")
 ####Random Forest####
 
 library(randomForest)
+listings2 <- listings[,-c(1,3,4,6)]
 
-rf <- randomForest(price~., data = listings[,-1])
+rf <- randomForest(price.bc~., data = listings2)
 
 
+sum((mod1$residuals)^2)
+sum((listings2$price.bc - predict(rf))^2)
+
+pricing <- mod1
+saveRDS(pricing, here("data", "pricing_model.rds"))
+final <- ls()[!(ls()%in%c("pricing","rf"))&!(ls()%in%og)]
+rm(list = final)
+rm(final)

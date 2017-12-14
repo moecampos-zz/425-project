@@ -18,6 +18,10 @@ source(here("R", "text_model.R"), local = TRUE)
 
 # load models
 text_model <- readRDS(here("data", "text_model.rds"))
+pricing_model <- readRDS(here("data", "pricing_model.rds"))
+
+# Add predictions to listings
+listings$fit <- fitted(pricing_model)^(-1/0.4)
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
@@ -28,7 +32,7 @@ server <- function(input, output, session) {
   rentalsInBounds <- reactive({
     coords <- listings %>%
       filter(nb == input$neighborhood) %>%
-      select(lon, lat)
+      dplyr::select(lon, lat)
 
     selected_points <- within_radius(
       lat = current_position$lat, lon = current_position$lon, coords,
@@ -59,7 +63,18 @@ server <- function(input, output, session) {
   })
 
   output$word_cloud <- renderPlot({
-    plot(text_model, input$neighborhood)
+    ggplot(rentalsInBounds(), aes(fit)) + 
+      geom_histogram() + 
+      labs(x = "Predicted price") +
+      title()
+    
+  })
+  
+  output$fit_hist <- renderPlot({
+    ggplot(rentalsInBounds()) + 
+      geom_histogram(aes(fit)) + 
+      labs(x = "Price", y = "Listings", title = "Predicted prices for selected area") +
+      theme_hc()
   })
 
   # for debugging I included the data table to make sure the selection makes
