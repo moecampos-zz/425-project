@@ -29,17 +29,18 @@ body <- dashboardBody(
     column(width = 6,
       sliderInput('search_radius', 'Radius (km)',
                   min = 0.1, max = 2, value = 0.1, step = 0.1),
+      
       box(width = NULL, solidHeader = TRUE,
         leaflet::leafletOutput("map", height = 500))
     ),
     column(width = 6,
       selectInput("neighborhood", "Neighborhood:",
-                  choices = bigNineNeighborhoods),
+                  choices = c('All', bigNineNeighborhoods), selected = "All"),
       tabBox(
         width = NULL, height = 500,
+        tabPanel("Price per Neighborhood", plotOutput('neighborhood_boxplot', height = 500)),
         tabPanel("Important Terms", plotOutput('word_cloud', height = 500)),
-        tabPanel("Room Types", plotOutput('hist_room_type', height = 500)),
-        tabPanel("Predicted Prices", plotOutput('fit_hist', heigh = 500))
+        tabPanel("Room Types", plotOutput('hist_room_type', height = 500))
       )
     )
   )
