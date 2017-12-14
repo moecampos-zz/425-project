@@ -1,6 +1,8 @@
 library(here)
 library(gclus)
 library(leaps)
+library(labelled)#for labels()
+library(stats) #for TukeyHSD
 
 source(here("R", "cleaning.R"), local = TRUE)
 
@@ -41,15 +43,24 @@ bigNineNeighborhoods <- c("San Marco", "Castello", "Cannaregio", "Dorsoduro", "G
 mor <- aov(price ~ nb, data = listings_with_id)
 
 ##THIS MODEL GIVES THE MEAN PREDICTED NEIGHBORHOOD PRICES
-library(stats)
-b <- TukeyHSD(x=mor, 'nb', conf.level = 0.95)
-plot(as.factor(list), listings$price)
+
+tukey <- TukeyHSD(x=mor, 'nb', conf.level = 0.95)
+signif <- tukey$nb[,4]
 
 
 
+newLabel <- str_split(labels(signif), "-")
+namesOne <- c(rep(NA, length(signif)))#stores names of neighborhoods for comparison
+namesTwo <- c(rep(NA, length(signif)))#stores names of neighborhoods for comparison
+for (i in 1:length(signif)){
+  namesOne[i] <- newLabel[[i]][1]
+}
+for (j in 1:length(signif)){
+  namesTwo[j] <- newLabel[[j]][2]
+}
+pVals <- unname(tukey$nb[,4])
+isSign <- ifelse(pVals < 0.05, 1, 0)
+sigData <- data.frame(namesOne, namesTwo, pVals, isSign)
 
 
-
-
-
-
+ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + geom_tile(col="black")
