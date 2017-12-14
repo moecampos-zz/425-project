@@ -10,11 +10,13 @@ library(here)
 library(leaflet)
 library(shiny)
 library(tidyverse)
+library(stringr)
 
 # data cleaning. This loads listings data.frame with the data
 source(here("R", "cleaning.R"), local = TRUE)
 source(here("R", "spatial.R"), local = TRUE)
 source(here("R", "text_model.R"), local = TRUE)
+source(here("R", "significance.R"), local = TRUE)
 
 # load models
 text_model <- readRDS(here("data", "text_model.rds"))
@@ -80,17 +82,17 @@ server <- function(input, output, session) {
     if (input$neighborhood != 'All') {
      g <- ggplot(rentalsInBounds()) +
       geom_histogram(aes(fit), fill = which_neighborhood_hue(input$neighborhood), alpha = 0.75) +
-      labs(x = "Price", y = "Listings", 
+      labs(x = "Predicted Price", y = "Listings", 
            title = paste("Predicted Prices for", input$neighborhood, collapse = ' ')) +
       theme_hc()
     } else {
       g <- ggplot(listings, aes(x = nb, y = price, color = nb)) +
         geom_boxplot() +
         coord_flip() +
-        scale_color_discrete("") +
         scale_color_manual(values=neighborhood_hues()) +
+        scale_color_discrete("") +
         xlab('Venice Neighborhood') +
-        ylab('Price Per Night ($)') +
+        ylab('Actual Price Per Night ($)') +
         ggthemes::theme_hc()
     }
 
@@ -98,14 +100,22 @@ server <- function(input, output, session) {
   })
 
   # an example of how to render a plot on selected data
-  output$hist_room_type <- renderPlot({
+  output$scatter_plot <- renderPlot({
     if (nrow(rentalsInBounds()) == 0) {
       return(NULL)
     }
-
-    ggplot(rentalsInBounds(), aes(x = room_type)) +
-      geom_bar(fill = 'steelblue', color = 'steelblue') +
-      coord_flip() + ggthemes::theme_hc()
+    
+    x_labels <- c("Room Type"="room_type", 
+      'Minimum Nights Per Stay'='min_nights',
+      'Reviews Per Month'='rpm', 
+      'Number of Reviews'='num_reviews',
+      'Nights Available Per Year'='avail')
+    
+    ggplot(rentalsInBounds(), aes_string(x = x_labels[[input$plot_variable]], y = 'fit')) +
+      geom_point(color = 'steelblue', alpha = 0.1) + 
+      ylab('Predicted Price') +
+      xlab(input$plot_variable) +
+      ggthemes::theme_hc()
   })
 
   output$word_cloud <- renderPlot({
@@ -113,6 +123,14 @@ server <- function(input, output, session) {
       return()
     }
     plot(text_model, input$neighborhood)
+  })
+  
+  output$neighborhood_waffle <- renderPlot({
+    ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + 
+      geom_tile(col="black") + 
+      scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant") + 
+      labs(x = "Neighborhood", y = "Neighborhood", title = "Significance") + 
+      ggthemes::theme_hc()
   })
 
   # observe mouse clicks and add a circle (radius in meters)
