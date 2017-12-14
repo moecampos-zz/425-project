@@ -11,6 +11,7 @@ library(leaflet)
 library(shiny)
 library(shinydashboard)
 library(tidyverse)
+library(ggthemes)
 
 
 source(here("R", "cleaning.R"), local = TRUE)
