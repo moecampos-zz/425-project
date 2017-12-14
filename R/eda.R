@@ -34,24 +34,18 @@ rs$which
 
 #let's consider how to bring down the number of factors in nb (without losing usefulness)
 
-#first 9 neighborhoods encompass 2/3 of the listings, will this be enough?
+
 bigNineNeighborhoods <- c("San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", "San Polo")
-list <- as.character(listings$nb)
-for (i in 1:length(listings$nb)){
-  if (!(list[i] %in% bigNineNeighborhoods)){
-    list[i] <- as.factor(0)
-  }
-}
-list <- as.factor(list)
-length(list[list!=1]) #counterintuitive that '0' codes as '1', but it does
-(length(listings$nb) - length(list[list!=1])) / length(listings$nb)
 
 #Using the big 9 neighborhoods
-mod5 <- lm(listings$price ~ list)
-summary(mod5)
-##THIS MODEL GIVES THE MEAN PREDICTED NEIGHBORHOOD PRICES
+mor <- aov(price ~ nb, data = listings_with_id)
 
+##THIS MODEL GIVES THE MEAN PREDICTED NEIGHBORHOOD PRICES
+library(stats)
+b <- TukeyHSD(x=mor, 'nb', conf.level = 0.95)
 plot(as.factor(list), listings$price)
+
+
 
 
 

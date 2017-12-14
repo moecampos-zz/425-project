@@ -2,8 +2,7 @@ library(here)
 library(tidyverse)
 
 
-#Code for Austin because he can never remember how to get the code loaded, no matter how many times he tries
-#setwd("C:/Users/Austin/425-project")
+
 bigNineNeighborhoods <- c("San Marco", "Castello", "Cannaregio", "Dorsoduro", 
                           "Giudecca", "Lido", "Santa Croce", "Murano", 
                           "San Polo")
