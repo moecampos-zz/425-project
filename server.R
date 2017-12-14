@@ -10,11 +10,13 @@ library(here)
 library(leaflet)
 library(shiny)
 library(tidyverse)
+library(stringr)
 
 # data cleaning. This loads listings data.frame with the data
 source(here("R", "cleaning.R"), local = TRUE)
 source(here("R", "spatial.R"), local = TRUE)
 source(here("R", "text_model.R"), local = TRUE)
+source(here("R", "significance.R"), local = TRUE)
 
 # load models
 text_model <- readRDS(here("data", "text_model.rds"))
@@ -121,6 +123,14 @@ server <- function(input, output, session) {
       return()
     }
     plot(text_model, input$neighborhood)
+  })
+  
+  output$neighborhood_waffle <- renderPlot({
+    ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + 
+      geom_tile(col="black") + 
+      scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant") + 
+      labs(x = "Neighborhood", y = "Neighborhood", title = "Significance") + 
+      ggthemes::theme_hc()
   })
 
   # observe mouse clicks and add a circle (radius in meters)

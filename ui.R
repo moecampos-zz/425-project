@@ -39,9 +39,9 @@ body <- dashboardBody(
       tabBox(
         width = NULL, height = 500,
         tabPanel("Price per Neighborhood", plotOutput('neighborhood_boxplot', height = 500)),
+        tabPanel("Price Comparison", plotOutput('neighborhood_waffle', height = 500)),
         tabPanel("Important Terms", plotOutput('word_cloud', height = 500)),
         tabPanel("Price per Feature", 
- 
           selectInput("plot_variable", "Variable Name:", 
                       choices = c("Room Type", 
                         'Minimum Nights Per Stay',
