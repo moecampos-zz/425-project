@@ -40,7 +40,15 @@ body <- dashboardBody(
         width = NULL, height = 500,
         tabPanel("Price per Neighborhood", plotOutput('neighborhood_boxplot', height = 500)),
         tabPanel("Important Terms", plotOutput('word_cloud', height = 500)),
-        tabPanel("Room Types", plotOutput('hist_room_type', height = 500))
+        tabPanel("Price per Feature", 
+ 
+          selectInput("plot_variable", "Variable Name:", 
+                      choices = c("Room Type", 
+                        'Minimum Nights Per Stay',
+                        'Reviews Per Month', 
+                        'Number of Reviews',
+                        'Nights Available Per Year')),
+          plotOutput('scatter_plot', height = 400))
       )
     )
   )
