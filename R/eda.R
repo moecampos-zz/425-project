@@ -59,8 +59,10 @@ for (j in 1:length(signif)){
   namesTwo[j] <- newLabel[[j]][2]
 }
 pVals <- unname(tukey$nb[,4])
-isSign <- ifelse(pVals < 0.05, 1, 0)
+isSign <- as.factor(ifelse(pVals < 0.05, "Yes", "No"))
 sigData <- data.frame(namesOne, namesTwo, pVals, isSign)
 
 
-ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + geom_tile(col="black")
+(ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black", xlab = "Neighborhood", ylab = "Neighborhood")) + geom_tile(col="black") 
++ scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant")
+)
