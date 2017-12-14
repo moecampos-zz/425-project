@@ -18,7 +18,7 @@ listings_with_id <- read.csv(here("data", "listings.csv"), header = TRUE) %>%
   filter(nb %in% bigNineNeighborhoods)
 
 listings_with_id[is.na(listings_with_id)] <- 0
-listings_with_id$nb <- droplevels(listings$nb)
+listings_with_id$nb <- droplevels(listings_with_id$nb)
 
 listings <- listings_with_id %>% 
   select(-id)
