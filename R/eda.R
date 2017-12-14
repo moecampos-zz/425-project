@@ -63,6 +63,6 @@ isSign <- as.factor(ifelse(pVals < 0.05, "Yes", "No"))
 sigData <- data.frame(namesOne, namesTwo, pVals, isSign)
 
 
-(ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black", xlab = "Neighborhood", ylab = "Neighborhood")) + geom_tile(col="black") 
-+ scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant")
-)
+(ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + geom_tile(col="black") 
++ scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant") + labs( x = "Neighborhood", y = "Neighborhood", title = "Significance"))
+
