@@ -11,11 +11,13 @@ Shiver me timbers
 ## Running the Code
 1. Without pulling the code from github:
 
-If you want to run the app without cloneing the repository
+The site is located [here](https://joshloyal.shinyapps.io/425-project/).
+
+If you want to run the laster master app without cloneing the repository:
 ```R
 library(shiny)
 
-shiny::runGithub("425-project", "moecampos")
+shiny::runGitHub("425-project", "moecampos")
 ```
 
 2. To edit the code:
