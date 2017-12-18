@@ -2,7 +2,9 @@
 title: "Text Analysis"
 author: "Joshua Loyal"
 date: "December 5, 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}

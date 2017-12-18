@@ -1,0 +1,159 @@
+---
+title: "Text Analysis"
+author: "Joshua Loyal"
+date: "December 17, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+pacman::p_load(tidyverse)
+
+pacman::p_load(textcat)
+pacman::p_load(stringr)
+pacman::p_load(text2vec)
+pacman::p_load(parallel)
+pacman::p_load(foreach)
+pacman::p_load(doMC)
+pacman::p_load(glmnet)
+pacman::p_load(here)
+
+source(here('R', 'stop_words.R'))
+source(here('R', 'cleaning.R'))
+source(here('R', 'text_model.R'))
+```
+
+```{r load_data, include = FALSE, cache = TRUE}
+reviews <- readr::read_csv(here('data', 'reviews_with_language_textcat.csv')) %>% 
+  filter(language == 'english') %>% 
+  select(-language) %>% 
+  inner_join(listings_with_id, by = c('listing_id' = 'id'))
+```
+
+```{r text_preprocessing, include = FALSE, cache = TRUE}
+# lower-case words
+prep_func <- tolower
+
+# tokenize text
+regex_pattern <- "(?u)\\b\\w\\w+\\b"
+token_func <- function(doc) {
+  str_match_all(doc, regex_pattern)
+}
+
+# remove numers
+remove_numbers <- function(words) {
+  non_numbers <- which(!str_detect(words, "\\d+"))
+  words[non_numbers]
+}
+  
+raw_documents <- reviews$comments %>% 
+  # lower-case
+  prep_func %>% 
+  # tokenize by word
+  token_func %>% 
+  # remove numbers
+  lapply(remove_numbers) %>% 
+  as.matrix()
+```
+
+```{r tfidf, include = FALSE, cache = TRUE}
+tfidf_features <- function(X_train, X_test = NULL) {
+  # iterator over training documents
+  it_train <- itoken(X_train, 
+                     progressbar = FALSE)
+  
+  # vocabulary is created from training only
+  vocab = create_vocabulary(it_train,
+                            ngram = c(1L, 2L),
+                            stopwords = stop_words)
+
+  # prune vocabulary
+  vocab = prune_vocabulary(vocab,
+                           doc_proportion_max = 0.8,
+                           doc_proportion_min = 0.001)
+  
+  # creates a document-term matrix
+  vectorizer = vocab_vectorizer(vocab)
+
+  # instantiate tfidf model
+  tfidf = TfIdf$new()
+  
+  # fit model to train data and transform train data with fitted model
+  tfidf_train <- create_dtm(it_train, vectorizer) %>% 
+    fit_transform(tfidf)
+  
+  if (!is.null(X_test)) {
+      # iterator over test documents
+      it_test <- itoken(X_test,
+                        progressbar = FALSE)
+    
+      # transform the test documents
+      tfidf_test <- create_dtm(it_test, vectorizer) %>% 
+        transform(tfidf)
+  } else {
+    tfidf_test <- NULL
+  }
+  
+  list(train=tfidf_train, test=tfidf_test)
+}
+
+dtm <- tfidf_features(raw_documents)$train
+```
+
+## Text Analysis
+
+The question possed by this analysis is the following: What are the important terms within the user reviews that can distinguish the nine Venetian neighborhoods? When choosing a location to stay the price is not the only determining factor. One may also want the location to be close to a landmark they plan to visit or be in a district know for a particulary interest. For example, a neighborhood may be know for its restaurants. Therefore, a vistor who plans to do a lot sampling of local cuisine may want to book a room in this 'foody' neighborhood. In summery, the coefficients of a multinomial lasso trained on tf-idf features were used to determine the most important terms in the user reviews.
+
+## Data Cleaning
+
+The raw data used in this analysis comprised of 216,295 multi-lingual user reviews of listings in Venice taken from the Inside Airbnb project. It should be noted that each listing could have multiple reviews. As far as data quality, some reviews are clearly spam coming from bots posting on Airbnb's website. Nothing was done to remove these reviews. They seemed to be only a small fraction of the total reviews and the final model does not seem affected by them.
+
+A few steps were taken before the feature extraction phase. The reviews were joined with the listing table (a inner join on `listing_id = id`) and filtered to lie in the nine neighborhoods considered in this report. In addition, only english reviews were used in the analysis. The `textcat` package was used to classify the language of the reviews. This package compares n-gram statistics between languages to make its decision. The aformentioned filtering allowed us to cut down the number of reviews to a total of 127,133 used in this analysis.
+
+## Feature Extraction
+
+TF-IDF (term frequency - inverse document frequency) features were used in the final model. In order to construct these the corpus and to be cleaned and tokenized. We performed the following pre-processing on the corpus
+
+- Tokens were defined by the regex `\\b\\w\\w+\\b`. This expression defines a token as 2 or more alphanumeric characters (punctuation is completely ignored and always treated as a token separator).
+- All numbers were removed with the regex `\\d+`. It was assumed numbers would mostly correspond to prices, dates, and street numbers which were not of interest in this analysis.
+- All letters were converted to lowercase.
+- Tokens occuring in more than 80% of the document or less than 0.1% of the document were removed. The assumption is that they occur in too much or too little of the corpus to be discriminative. 
+- A list of common stop words (words like the, a, you, we) were removed from the corpus. In addition, the names of the neighborhoods as well as miss-spellings of the neighborhoods were removed from the corpus. This was done to avoid learning the name of the neighboorhood as the most important feature.
+
+Once the text was cleaned, uni-grams and bi-grams were construct and transformed into tf-idf weights using the `text2vec` package. The following bar chart contains the top 30 most important uni-grams and bi-grams in the corpus:
+
+```{r vis, echo = FALSE}
+tfidf_norm <- max(abs(colSums(dtm)))
+norm_tfidf <- colSums(dtm) / tfidf_norm
+
+tibble(term = names(norm_tfidf), importance = norm_tfidf) %>% 
+  mutate(term = reorder(term, importance, abs)) %>% 
+  arrange(desc(importance)) %>% 
+  top_n(30, importance) %>% 
+  ggplot(aes(x = importance, y = term)) +
+    geom_segment(aes(x = 0, y = term, xend = importance, yend = term), color = "grey50") +
+    geom_point() +
+    loyalr::theme_pub()
+```
+
+The importance is given by the sum of the terms weigh across the whole corpus over the summation of all tf-idf weights. The terms look as you would expect from a review data of houses. Many terms describing the Airbnb listing (apartment, great, friendly, etc.).
+
+## Modeling
+
+A multinomial lasso model was used to determine the effect of the various terms in classifying the nine neighborhoods of Venice. The model was fit using the `glmnet` package. The value of the regularization parameter $\lambda$ was chosen using 5-fold cross-validation. The result is a model of the form:
+$$
+Pr(\text{Neighborhood} = k | X = x) = \frac{e^{\beta_{0k} + \beta_k^T x}}{\sum_{l = 1}^K e^{\beta_{0l} + \beta_l^Tx}}
+$$
+The non-zero coefficients should give us a way to measure the importance of a term in classifying a particular neighborhood. 
+
+## Results
+
+The results of this analysis are the coefficients of the multinomial lasso. Large coefficients in magnitude should indicate a stronger effect on the classification of a given neighborhood. In order to display this information to the user, the UI utilizes a word-cloud per neighborhood of the top 100 terms ranked by the magnitude of the coefficients of the model. Words that are larger in the word-cloud have larger coefficients in magnitude. An example for the neighborhood Castello is displayed below.
+
+```{r wordcloud, echo = FALSE}
+text_model <- readRDS(here("data", "text_model.rds"))
+plot(text_model, 'Castello')
+```
+
+One can see that the most important terms include: `arsenale`, `garibaldi`, and `zaccaria`. This corresponds to the Venetian Arsenal, the Via Garibaldi, and the San Zacarria which are various attractions in the area. Of course the model is not perfect. Names of various landlords as well as sites located in other neighborhoods are located in the word cloud. However, they tend to have smaller coefficients.
