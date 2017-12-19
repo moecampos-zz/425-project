@@ -7,15 +7,27 @@ output:
   html_document: default
 ---
 
+## Introduction
+
+Spending days on the open sea hunting for treasure can leave any pirate suffering from scurvy. Therefore, it is important for a pirate to have an easy way to find the perfect place on land to drop anchor and to rest up for the next big excursion. We plan to use data from Airbnb in Venice, Italy to design a data-driven application that will help these pirates find the perfect booking. 
+
+Taking into account what features would most interest a pirate when choosing what locations to visit, we are interested in answering the following three questions:
+
+* Is there a difference in pricing in Airbnb listings among the different neighborhoods of Venice?
+* What locations distinguish the Venice’s neighborhoods?
+* What variables best predict prices of Airbnb listings in Venice?
+
 ## Data Background
 
-```{r}
+```{r, echo = FALSE, message=FALSE}
 library(here)
 listings <- read.csv(here("data", "listings.csv"), header = T)
 ```
 
 
 The data was taken from the website insideairbnb.com, which is an independent entity from Airbnb that lets you explore data from certain cities around the world. The data that the compile in their website is publicly available information. The data set for Venice was released in partnership with RESET VENEZIA, a group of local activists that strive to use data for the benefit of the local communities in Venice. The data was compiled on May 9th 2017 and has `r nrow(listings)` listings and `r ncol(listings)` variables. 
+
+## Data Cleaning
 
 Of the `r ncol(listings)` variables, 4 represent ID variables and the rest have potential use in a linear model. These are: neighborhood group, neighborhood, latitude, longitude, room type, price, minimum nights, number of reviews, date of the last review, reviews per month, calculated host listings count and days available in a year. Date of the last review was not taken into account since not all listings had reviews and number or reviews or reviews per month could be a much more powerful predictive variable in a future model. Another variable that was discarded early on was the calculated host listings count which specified, for each host, the estimated number of listings that entity had. Since this variable describes best the host instead of the listing we decided to not use it in the model. 
 
