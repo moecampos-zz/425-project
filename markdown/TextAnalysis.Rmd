@@ -5,7 +5,7 @@ date: "December 17, 2017"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r text_setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 pacman::p_load(tidyverse)
@@ -18,6 +18,7 @@ pacman::p_load(foreach)
 pacman::p_load(doMC)
 pacman::p_load(glmnet)
 pacman::p_load(here)
+pacman::p_load(stringr)
 
 source(here('R', 'stop_words.R'))
 source(here('R', 'cleaning.R'))

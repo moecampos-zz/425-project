@@ -9,7 +9,7 @@ output:
 
 ## Data Background
 
-```{r}
+```{r introduction_setup, include = FALSE}
 library(here)
 listings <- read.csv(here("data", "listings.csv"), header = T)
 ```

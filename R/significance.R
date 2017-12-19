@@ -1,3 +1,5 @@
+library(stringr)
+
 source(here('R', 'cleaning.R'), local = TRUE)
 
 #Using the big 9 neighborhoods
