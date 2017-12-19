@@ -19,6 +19,7 @@ Taking into account what features would most interest a pirate when choosing wha
 
 ## Data Background
 
+
 ```{r, echo = FALSE, message=FALSE}
 library(here)
 listings <- read.csv(here("data", "listings.csv"), header = T)

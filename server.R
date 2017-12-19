@@ -111,8 +111,14 @@ server <- function(input, output, session) {
       'Number of Reviews'='num_reviews',
       'Nights Available Per Year'='avail')
     
-    ggplot(rentalsInBounds(), aes_string(x = x_labels[[input$plot_variable]], y = 'fit')) +
-      geom_point(color = 'steelblue', alpha = 0.1) + 
+    if (input$neighborhood != 'All') {
+      points <- geom_point(color = 'steelblue', alpha = 0.5)
+    } else {
+      points <- geom_jitter(aes(color = nb), alpha = 0.5)
+    }
+    ggplot(rentalsInBounds(), aes_string(x = x_labels[[input$plot_variable]], 
+                                         y = 'fit')) +
+      points +
       ylab('Predicted Price') +
       xlab(input$plot_variable) +
       ggthemes::theme_hc()

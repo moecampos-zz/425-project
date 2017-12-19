@@ -1,0 +1,22 @@
+---
+title: "Venice Pirates: 425 Final Project"
+author: "Mauricio Campos, Josh Loyal, Austin Jay Warner"
+date: "12/19/2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r child = 'Introduction.Rmd'}
+```
+
+```{r child = 'ProjectPaper.Rmd'}
+```
+
+```{r child = 'TextAnalysis.Rmd'}
+```
+
+```{r child = 'PricingAnalysis.Rmd'}
+```

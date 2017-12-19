@@ -7,7 +7,7 @@ output:
   pdf_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r significance_setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(tidyverse)
@@ -20,9 +20,6 @@ source(here("R", "text_model.R"))
 #source(here("R", "eda.R"))
 source(here("R", "significance.R"))
 ```
-
-
-
 
 
 ##Investigating Neighborhood Significance on Price
