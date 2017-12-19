@@ -66,3 +66,21 @@ sigData <- data.frame(namesOne, namesTwo, pVals, isSign)
 (ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + geom_tile(col="black") 
 + scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant") + labs( x = "Neighborhood", y = "Neighborhood", title = "Significance"))
 
+plot(listings_with_id$price, listings_with_id$nb)
+output$neighborhood_boxplot <- renderPlot({
+  if (input$neighborhood != 'All') {
+    g <- ggplot(rentalsInBounds()) +
+      geom_histogram(aes(fit), fill = which_neighborhood_hue(input$neighborhood), alpha = 0.75) +
+      labs(x = "Predicted Price", y = "Listings", 
+           title = paste("Predicted Prices for", input$neighborhood, collapse = ' ')) +
+      theme_hc()
+  } else {
+    g <- ggplot(listings, aes(x = nb, y = price, color = nb)) +
+      geom_boxplot() +
+      coord_flip() +
+      xlab('Venice Neighborhood') +
+      ylab('Actual Price Per Night ($)') +
+  }
+  
+  g
+})
