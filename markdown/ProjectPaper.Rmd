@@ -42,21 +42,33 @@ Intuitively, the location of a listing will have a large impact on the pricing i
 
 Once we have decided to use neighborhoods as our geographical predictor, we face the challenge of scale. The neighborhood predictor, as a categorical variable, has 56 levels, which is simply too many levels for the classical techniques that we have studied throughout the semester in STAT425. 
 
-To reduce the number of levels of the neighborhood variable, we will cluster neighborhoods. The Airbnb website lists nine major neighborhoods, "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." We therefore re-coded the neighborhood factor levels to be these nine neighborhoods along with a level for "not in a major neighborhood." Indeed, these nine neighborhoods account for 81.5% of listings. 
+We decided to reduce the number of neighborhoods in our analysis. The Airbnb website lists nine major neighborhoods, "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." We therefore re-coded the neighborhood factor levels to be these nine neighborhoods. We also think that these neighborhood are the most convenient for pirates: each of these neighborhoods is accessible by water. Indeed, these nine neighborhoods account for 81.5% of listings. 
 
-``{r fig1, fig.height=3, fig.width = 5, echo=FALSE, fig.cap="L"}
-plot((list), listings$price, ylim = c(0,1000))
+##Investigating Neighborhood Significance on Price
+
+To check for pairwise differences in price between neighborhoods, we implemented Tukey's HSD at an overall significance level of 0.05. 
+
+```{r}
+plot(tukey)
 ```
 
-##Review Text Analysis
+We found that there are significant differences in pricing between Dorsoduro and Castello, Dorsoduro and Cannaregio, Dorsoduro and Lido, as well as between San Marco and Cannaregio, San Marco and Castello, San Marco and santa Croce, and San Marco and Lido. 
 
-##Modelling Listing Price
+```{r}
+(ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + geom_tile(col="black") 
++ scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant") + labs( x = "Neighborhood", y = "Neighborhood", title = "Significance"))
+```
 
-The neighborhood factor is significant. 
+We conclude from this analysis that Dorsoduro and San Marco are priced differently than the other neighborhoods. 
 
-##Find a Pretty Pillageable Party Palace Place/Pagoda for Parsimonious Plodding Pandering Pirates
+```{r}
+(ggplot(listings, aes(x = nb, y = price, color = nb)) +
+      geom_boxplot() +
+      coord_flip() +
+      #scale_color_manual(values=neighborhood_hues()) +
+      #scale_color_discrete("") +
+      xlab('Venice Neighborhood') +
+      ylab('Actual Price Per Night ($)'))
+```
 
-\section{Predicting Luxury}
-
-
-
+In particular, it appears that Dorsoduro and San Marco are priced higher than other neighborhoods. 
