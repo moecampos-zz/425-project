@@ -56,4 +56,13 @@ summary(mod3)
 
 Due to the transformation of price most of the interpretability of the coefficients on price is gone, but we can still interpret their effect on the transformed price. We can see, for example, that of all the Neighborhood dummy variables, San Marco has the most negative coefficient, meaning that in average San Marco has the lowest transformed price, if the remaining variables remain constant. Since the transformation on price is inverse then this could translate to a Neighborhood with higher prices in average. For example, Lido has the most positive coefficient, so we would expect it, on average, to have the lowest prices. This can be observed through the following scatterplots. 
 
-INSERT SCATTERPLOTS HERE, K THX
+```{r scatter_plots, echo = FALSE}
+listings <- listings %>% 
+  mutate(preds = fitted(mod3)^(-1/0.4))
+
+ggplot(listings, aes(x = rpm, y = preds)) +
+  geom_jitter(aes(color = nb), alpha = 0.5) +
+  ylab('Predicted Price') +
+  xlab('Reviews Per Month') +
+  ggthemes::theme_hc()
+```
