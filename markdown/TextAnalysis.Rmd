@@ -135,7 +135,7 @@ tibble(term = names(norm_tfidf), importance = norm_tfidf) %>%
   ggplot(aes(x = importance, y = term)) +
     geom_segment(aes(x = 0, y = term, xend = importance, yend = term), color = "grey50") +
     geom_point() +
-    loyalr::theme_pub()
+    ggthemes::theme_hc()
 ```
 
 The importance is given by the sum of the terms weigh across the whole corpus over the summation of all tf-idf weights. The terms look as you would expect from a review data of houses. Many terms describing the Airbnb listing (apartment, great, friendly, etc.).
