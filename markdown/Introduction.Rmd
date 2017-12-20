@@ -7,26 +7,28 @@ output:
   html_document: default
 ---
 
-## Introduction
+# Introduction
 
-Spending days on the open sea hunting for treasure can leave any pirate suffering from scurvy. Therefore, it is important for a pirate to have an easy way to find the perfect place on land to drop anchor and to rest up for the next big excursion. We plan to use data from Airbnb in Venice, Italy to design a data-driven application that will help these pirates find the perfect booking. 
+Spending days on the open sea hunting for treasure can leave any pirate suffering from scurvy. Therefore, it is important for a pirate to have an easy way to find the perfect place on land to drop anchor and to rest up for the next big excursion. In this project we use data from Airbnb in Venice, Italy to design a data-driven application that will help these priates find the perfect booking.
 
-Taking into account what features would most interest a pirate when choosing what locations to visit, we are interested in answering the following three questions:
+Of course, the conept of a 'perfect' booking can mean different things for different pirates. For some pirates the price of a booking could be the important factor. As such they may be interested knowing the affect of various co-variates on the price of a booking, so that they can determine whether they are getting a fair price. Other pirates may be concerned with where to dock their ships, so they would like to discriminate the price of the bookings by their geographic location within Venice. While others pirates may be concerned with the attractions close to their booking. With these factors in mind, we narrowed down our analysis to answer the following three questions:
 
-* Is there a difference in pricing in Airbnb listings among the different neighborhoods of Venice?
-* What locations distinguish the Venice’s neighborhoods?
-* What variables best predict prices of Airbnb listings in Venice?
+1. Is there a difference in pricing in Airbnb listings among the different neighborhoods of Venice?
+2. What locations distinguish the Venitian neighborhoods?
+3. What variables best predict prices of Airbnb listings in Venice?
 
-## Data Background
+In what follows, we answer the first question using an ANOVA with the Ventian neighborhoods as the independent variable and price as the dependent variable. The second question is tackled using a linear model to distinguish the neighborhoods based on the user's text reviews. Finally, another linear model is used to develop a model to predict price based on common co-variates in the Airbnb dataset.
+
+# Data Background
 
 
 ```{r, echo = FALSE, message=FALSE}
 library(here)
-listings <- read.csv(here("data", "listings.csv"), header = T)
+listings <- read.csv(here("data", "listings.csv"), header = TRUE)
 ```
 
 
-The data was taken from the website insideairbnb.com, which is an independent entity from Airbnb that lets you explore data from certain cities around the world. The data that the compile in their website is publicly available information. The data set for Venice was released in partnership with RESET VENEZIA, a group of local activists that strive to use data for the benefit of the local communities in Venice. The data was compiled on May 9th 2017 and has `r nrow(listings)` listings and `r ncol(listings)` variables. 
+The data was taken from the website insideairbnb.com, which is an independent entity from Airbnb that lets you explore data from certain cities around the world. The data that they compile in their website is publicly available information. The data set for Venice was released in partnership with RESET VENEZIA, a group of local activists that strive to use data for the benefit of the local communities in Venice. The data was compiled on May 9th 2017 and has `r nrow(listings)` listings and `r ncol(listings)` variables. 
 
 ## Data Cleaning
 
@@ -36,8 +38,6 @@ There were `r sum(is.na(listings))` NA's in the data set, however they were all 
 
 The location of a listing will have a large impact on the pricing in a predictive sense. Our data gives us several ways of measuring the location of a listing: the neighborhood of the listing, the neighborhood group of the listing, the latitude, and the longitude. These covariates are strongly correlated and so we decided to remove some of these predictors. The most interpretable of these covariates were neighborhood and neighborhood group. Neighborhood group classifies listings according to whether they are mainland or island and since a given neighborhood is either on the island or mainland, it is sufficient to consider only neighborhood. 
 
-Once we decided to use neighborhoods as our geographical predictor, we faced the challenge of scale. The neighborhood predictor, as a categorical variable, has 56 levels, which is simply too many levels for the classical techniques that we have studied throughout the semester in STAT425. 
-
-We decided to reduce the number of neighborhoods in our analysis. The Airbnb website lists nine major neighborhoods, "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." We therefore re-coded the neighborhood factor levels to be these nine neighborhoods. We also think that these neighborhood are the most convenient for pirates: each of these neighborhoods is accessible by water. Indeed, these nine neighborhoods account for 81.5% of listings. 
+Once we decided to use neighborhoods as our geographical predictor, we faced the challenge of scale. The neighborhood predictor, as a categorical variable, has 56 levels, which is simply too many levels to incorporate into simple linear regression. In order to reduce the number of neighborhoods, we chose the nine most frequent neighborhoods in the dataset. This reduced set of neighborhoods included "San Marco", "Castello", "Cannaregio", "Dorsoduro", "Giudecca", "Lido", "Santa Croce", "Murano", and "San Polo." Indeed, these neighborhoods account for 81.5% of the listings. Furthermore, we think that these neighborhood are the most convenient for pirates, since each of these neighborhoods is accessible by water. 
 
 In the end, the data set was reduced to 8 variables and 4910 observations. Of those 8 variables, 7 were used in the pricing model and the 8th one (listing id) was used to link the listings with the analysis of the reviews. 

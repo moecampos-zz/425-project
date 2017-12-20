@@ -1,0 +1,12 @@
+---
+title: "Conclusion"
+author: "Joshua Loyal"
+date: "12/19/2017"
+output: pdf_document
+---
+
+```{r conclusion_setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Conclusion

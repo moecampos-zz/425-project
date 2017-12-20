@@ -102,7 +102,7 @@ tfidf_features <- function(X_train, X_test = NULL) {
 dtm <- tfidf_features(raw_documents)$train
 ```
 
-## Text Analysis
+# Text Analysis
 
 The question possed by this analysis is the following: What are the important terms within the user reviews that can distinguish the nine Venetian neighborhoods? When choosing a location to stay the price is not the only determining factor. One may also want the location to be close to a landmark they plan to visit or be in a district know for a particulary interest. For example, a neighborhood may be know for its restaurants. Therefore, a vistor who plans to do a lot sampling of local cuisine may want to book a room in this 'foody' neighborhood. In summery, the coefficients of a multinomial lasso trained on tf-idf features were used to determine the most important terms in the user reviews.
 
@@ -124,7 +124,7 @@ TF-IDF (term frequency - inverse document frequency) features were used in the f
 
 Once the text was cleaned, uni-grams and bi-grams were construct and transformed into tf-idf weights using the `text2vec` package. The following bar chart contains the top 30 most important uni-grams and bi-grams in the corpus:
 
-```{r vis, echo = FALSE}
+```{r vis, echo = FALSE, warning = FALSE}
 tfidf_norm <- max(abs(colSums(dtm)))
 norm_tfidf <- colSums(dtm) / tfidf_norm
 
@@ -152,7 +152,7 @@ The non-zero coefficients should give us a way to measure the importance of a te
 
 The results of this analysis are the coefficients of the multinomial lasso. Large coefficients in magnitude should indicate a stronger effect on the classification of a given neighborhood. In order to display this information to the user, the UI utilizes a word-cloud per neighborhood of the top 100 terms ranked by the magnitude of the coefficients of the model. Words that are larger in the word-cloud have larger coefficients in magnitude. An example for the neighborhood Castello is displayed below.
 
-```{r wordcloud, echo = FALSE}
+```{r wordcloud, echo = FALSE, message = FALSE, fig.align = 'center'}
 text_model <- readRDS(here("data", "text_model.rds"))
 plot(text_model, 'Castello')
 ```

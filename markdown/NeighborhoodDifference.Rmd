@@ -1,0 +1,48 @@
+---
+title: "Considerations for the Modern Pirate: Venice"
+author: "Mauricio Campos, Josh Loyal, Austin Jay Warner"
+date: "December 11, 2017"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r significance_setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(ggplot2)
+library(here)
+library(ggthemes)
+
+source(here("R", "cleaning.R"))
+source(here("R", "significance.R"))
+```
+
+
+# Neighborhood ANOVA
+
+The goal of this section was to investigate the effect the Venetian neighborhoods had on the price of a listing. The following scatter-plot displays the price split across the various neighborhoods:
+
+```{r nb_scatter, echo = FALSE}
+ggplot(listings, aes(x = nb, y = price, color = nb)) +
+      geom_boxplot() +
+      coord_flip() +
+      xlab('Venice Neighborhood') +
+      ylab('Actual Price Per Night ($)') +
+      ggthemes::theme_hc()
+```
+
+Although not rigourous, there seems to some variation in the prices among the neighborhoods. In particular, San Marco and Dorsoduro appear to have higher prices than the other neighborhoods.
+
+In order to investigate the pricing differences in a statistically rigorous way, we fit a one-way ANOVA model with neighborhood as the independent variable and price as the response. Since we were interested in comparing all pairwise differences in the results, we used Tukey's HSD at an overall confidence level of 95% to measure the statistical significance of these contrasts. The result of this analysis is displayed in the following figure:
+
+```{r echo = FALSE}
+ggplot(sigData, aes(x=namesOne, y=namesTwo, fill=isSign,  col = "black")) + 
+  geom_tile(col="black") +
+  scale_fill_manual(values = c("#F1BB7B", "#FD6467"), name="Significant") + 
+  labs( x = "Neighborhood", y = "Neighborhood", title = "Significance") +
+  ggthemes::theme_hc()
+```
+
+Each square represents the pairwise comparison between the corresponding column and row. An orange box indicates the Tukey's HSD concluded the difference in price was not significant at an $\alpha = 5$% level. A red box indicates that the test was in fact significant. According to this analysis, we found that there are significant differences in pricing between Dorsoduro and Castello, Dorsoduro and Cannaregio, Dorsoduro and Lido, as well as between San Marco and Cannaregio, San Marco and Castello, San Marco and santa Croce, and San Marco and Lido. In fact, San Marco and Dorsoduro have the most red squares associated with them. This seems to match our observation that they are priced differently than the other neighborhoods. This makes sense because these neighborhoods are located in the heart of Venice.

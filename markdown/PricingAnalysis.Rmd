@@ -15,28 +15,28 @@ source(here("R", "cleaning.R"), local = TRUE)
 ```
 
 
-## Pricing Model
+# Pricing Model
 
-We want to predict price. The first model considered was: Price ~ availability + neighborhood + room type + minimum nights + number of reviews + reviews per month. This first model presented many problems, including a small $R^2$ value of 0.099. Also, observing the diagnostic plots we can see that this model also posed problems of normality, homogeneity of the variance and some really influential points. 
+Finally, we would like develop a model to predict the price of a listing as well as determine the effect of the co-variates on that price. The first model considered was: `Price ~ availability + neighborhood + room type + minimum nights + number of reviews + reviews per month`. This first model presented many problems, including a small $R^2$ value of 0.099. Also, observing the diagnostic plots we can see that this model also posed problems of normality, homogeneity of the variance and some really influential points. 
 
-```{r}
+```{r echo = FALSE}
 mod1 <- lm(price ~ avail + num_reviews + rpm + nb + room_type + min_nights, data = listings)
 par(mfrow = c(2,2))
 plot(mod1, which = c(1,2,5))
 ```
 
-Seeing these plots we can also identify several listings that are clear outliers. These listings had prices above \$1000. It is important to note that in the whole data set only `r sum(listings$price > 1000)`listings have prices above that price range. For exploration purposes, the three influential observations were removed from the model and then fitted again and the results were that minimum nights was no longer a significant variable in the model. 
+Seeing these plots we can also identify several listings that are clear outliers. These listings had prices above \$1000. It is important to note that in the whole data set only `r sum(listings$price > 1000)` listings have prices above that price range. For exploration purposes, the three influential observations were removed from the model and then fitted again and the results were that minimum nights was no longer a significant variable in the model. 
 
-We considered doing a Box Cox transformation:
+In addition, we considered doing a Box-Cox transformation in order to improve the goodness-of-fit of the model. The following displays the log-likelihood of the box-cox fit:
 
-```{r}
+```{r, echo = FALSE}
 bc <- boxcox(lm(price ~ avail + num_reviews + rpm + nb + room_type, 
           data = listings), lambda = seq(-0.5,0,by = 0.01))
 ```
 
 We can see from the confidence interval that we can use the value of $\lambda = -0.4$ to transform price. We then fitted the model again but with the transformed price. Observing the diagnostic plots we can see that the original problems haven been fixed. The $R^2$ was also increased to 0.3139. 
 
-```{r}
+```{r echo = FALSE}
 listings$price.bc <- listings$price^-0.4
 mod2 <- lm(price.bc ~ avail + num_reviews + rpm + nb + room_type + min_nights, data = listings)
 par(mfrow = c(2,2))
@@ -49,12 +49,12 @@ Price^-0.4^ ~ availability + neighborhood + room type + number of reviews + revi
 
 With the following summary statistics:
 
-```{r}
+```{r, echo = FALSE}
 mod3 <- lm(price.bc ~ avail + num_reviews + rpm + nb + room_type, data = listings)
 summary(mod3)
 ```
 
-Due to the transformation of price most of the interpretability of the coefficients on price is gone, but we can still interpret their effect on the transformed price. We can see, for example, that of all the Neighborhood dummy variables, San Marco has the most negative coefficient, meaning that in average San Marco has the lowest transformed price, if the remaining variables remain constant. Since the transformation on price is inverse then this could translate to a Neighborhood with higher prices in average. For example, Lido has the most positive coefficient, so we would expect it, on average, to have the lowest prices. This can be observed through the following scatterplots. 
+Due to the transformation of price most of the interpretability of the coefficients on price is gone, but we can still interpret their effect on the transformed price. We can see, for example, that of all the Neighborhood dummy variables, San Marco has the most negative coefficient. This means that on average San Marco has the lowest transformed price, if the remaining variables remain constant. Since the transformation on price is the reciprical of price, this result translates to a Neighborhood with higher prices on average. For example, Lido has the most positive coefficient, so we would expect it, on average, to have the lowest prices. This observation is also backed up by the ANOVA presented in the previous section. Furthermore, we can observe this affect on neighborhood in the scatterplots of the predicted price vs. an other covariate. In particular, a scatterplot of Predicted Price vs. Reviews Per Month we can see a clear stratification of the prices by neighborhood:
 
 ```{r scatter_plots, echo = FALSE}
 listings <- listings %>% 
@@ -66,3 +66,5 @@ ggplot(listings, aes(x = rpm, y = preds)) +
   xlab('Reviews Per Month') +
   ggthemes::theme_hc()
 ```
+
+San Marco in blue has a very high price independent of the co-variate, while Lido in green has a lower price.
