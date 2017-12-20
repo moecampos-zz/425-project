@@ -3,7 +3,7 @@ Shiver me timbers
 
 ## Project Structure
 1. All data files (raw or processed) are located in the top-level `data` directory.
-2. Scripts for analysis are included in the top-level `R` directory.
+2. Scripts for analysis are included in the top-level `R` directory. The text analysis code is contained in a rmarkdown file at markdown/ReviewAnalysis.Rmd.
 * The script `R/cleaning.R` includes the code for loading the data used for visualization in the shiny application. It is sourced in local environment of `server.R`, so you should avoid putting long running code in this file. It should just load the data from disk and do various data munging operations. The result is a data.frame `listings` with the data for visualization and modeling.
 3. The rest of the project is structured like a normal Shiny application. `server.R` contains the backend code. By backend I mean code that generates data used by the U/I, i.e. it runs the R scripts. `ui.R` contains the front-end code. This is code that changes the web-app for the user, i.e the html and css seen by the user.
 4. `www` contains anything else needed for the webapp. Most importantly `styles.css` which contains any css for the web-page.
