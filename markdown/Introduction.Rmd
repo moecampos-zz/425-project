@@ -9,15 +9,15 @@ output:
 
 # Introduction
 
-Spending days on the open sea hunting for treasure can leave any pirate suffering from scurvy. Therefore, it is important for a pirate to have an easy way to find the perfect place on land to drop anchor and to rest up for the next big excursion. In this project we use data from Airbnb in Venice, Italy to design a data-driven application that will help these priates find the perfect booking.
+Spending days on the open sea hunting for treasure can leave any pirate suffering from scurvy. Therefore, it is important for a pirate to have an easy way to find the perfect place on land to drop anchor and to rest up for the next big excursion. In this project we use data from Airbnb in Venice, Italy to design a data-driven application that will help these pirates find the perfect booking.
 
-Of course, the conept of a 'perfect' booking can mean different things for different pirates. For some pirates the price of a booking could be the important factor. As such they may be interested knowing the affect of various co-variates on the price of a booking, so that they can determine whether they are getting a fair price. Other pirates may be concerned with where to dock their ships, so they would like to discriminate the price of the bookings by their geographic location within Venice. While others pirates may be concerned with the attractions close to their booking. With these factors in mind, we narrowed down our analysis to answer the following three questions:
+Of course, the concept of a 'perfect' booking can mean different things for different pirates. For some pirates the price of a booking could be the important factor. As such they may be interested knowing the affect of various co-variates on the price of a booking, so that they can determine whether they are getting a fair price. Other pirates may be concerned with where to dock their ships, so they would like to discriminate the price of the bookings by their geographic location within Venice. While others pirates may be concerned with the attractions close to their booking. With these factors in mind, we narrowed down our analysis to answer the following three questions:
 
 1. Is there a difference in pricing in Airbnb listings among the different neighborhoods of Venice?
-2. What locations distinguish the Venitian neighborhoods?
+2. What locations distinguish the Venetian neighborhoods?
 3. What variables best predict prices of Airbnb listings in Venice?
 
-In what follows, we answer the first question using an ANOVA with the Ventian neighborhoods as the independent variable and price as the dependent variable. The second question is tackled using a linear model to distinguish the neighborhoods based on the user's text reviews. Finally, another linear model is used to develop a model to predict price based on common co-variates in the Airbnb dataset.
+In what follows, we answer the first question using an ANOVA with the Venetian neighborhoods as the independent variable and price as the dependent variable. The second question is tackled using a linear model to distinguish the neighborhoods based on the user's text reviews. Finally, another linear model is used to develop a model to predict price based on common co-variates in the Airbnb dataset.
 
 # Data Background
 

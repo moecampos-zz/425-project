@@ -11,12 +11,12 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Conclusion
 
-Until now pirates in Venice, Italy had no data driven way to determine the optimal houses to pillage based on Airbnb listings. In order to help these pirates we identified differences in pricing amoung the Venetian neighborhoods, highlighted terms in the user reviews that could distinguish the neighborhoods, as well as built a model that could predict prices for new listings.
+Until now pirates in Venice, Italy had no data driven way to determine the optimal houses to pillage based on Airbnb listings. In order to help these pirates we identified differences in pricing among the Venetian neighborhoods, highlighted terms in the user reviews that could distinguish the neighborhoods, as well as built a model that could predict prices for new listings.
 
-In particular, we demonstrated that San Marco and Dorsoduro tend to have higher prices than the rest of the neighborhood. Therefore pirates that are interested in expensive houses should plan to visit those neighborhoods. Conversly, pirates interested in cheap accomadations should travel elsewhere.
+In particular, we demonstrated that San Marco and Dorsoduro tend to have higher prices than the rest of the neighborhood. Therefore pirates that are interested in expensive houses should plan to visit those neighborhoods. Conversely, pirates interested in cheap accommodations should travel elsewhere.
 
 Furthermore, we were able to build a model to predict the neighborhoods in Venice based on the textual reviews. An important side-effect of this analysis is that it revealed important landmarks in the various neighborhoods. For example, pirates short on weapons may want to visit the Venetian Arsenal in Castello to re-stock their supply.
 
-Finally, our pricing model will be indespensable to pirates who want to forcast their costs while staying in the area. They can now consider the effect on price a listings availability, neighborhood choice, room type, number of reviews, and number of reviews per month will have before booking a stay.
+Finally, our pricing model will be indispensable to pirates who want to forecast their costs while staying in the area. They can now consider the effect on price a listings availability, neighborhood choice, room type, number of reviews, and number of reviews per month will have before booking a stay.
 
-In summary, we believe our insights will be indespensable for pirates visting Venice, and we hope that our analysis will provide insights to friendly pirates everywhere!
+In summary, we believe our insights will be indispensable for pirates visiting Venice, and we hope that our analysis will provide insights to friendly pirates everywhere!

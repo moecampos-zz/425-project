@@ -104,13 +104,13 @@ dtm <- tfidf_features(raw_documents)$train
 
 # Text Analysis
 
-The question possed by this analysis is the following: What are the important terms within the user reviews that can distinguish the nine Venetian neighborhoods? When choosing a location to stay the price is not the only determining factor. One may also want the location to be close to a landmark they plan to visit or be in a district know for a particulary interest. For example, a neighborhood may be know for its restaurants. Therefore, a vistor who plans to do a lot sampling of local cuisine may want to book a room in this 'foody' neighborhood. In summery, the coefficients of a multinomial lasso trained on tf-idf features were used to determine the most important terms in the user reviews.
+The question posed by this analysis is the following: What are the important terms within the user reviews that can distinguish the nine Venetian neighborhoods? When choosing a location to stay the price is not the only determining factor. One may also want the location to be close to a landmark they plan to visit or be in a district know for a particular interest. For example, a neighborhood may be know for its restaurants. Therefore, a visitor who plans to do a lot sampling of local cuisine may want to book a room in this 'foody' neighborhood. In summery, the coefficients of a multinomial lasso trained on tf-idf features were used to determine the most important terms in the user reviews.
 
 ## Data Cleaning
 
 The raw data used in this analysis comprised of 216,295 multi-lingual user reviews of listings in Venice taken from the Inside Airbnb project. It should be noted that each listing could have multiple reviews. As far as data quality, some reviews are clearly spam coming from bots posting on Airbnb's website. Nothing was done to remove these reviews. They seemed to be only a small fraction of the total reviews and the final model does not seem affected by them.
 
-A few steps were taken before the feature extraction phase. The reviews were joined with the listing table (a inner join on `listing_id = id`) and filtered to lie in the nine neighborhoods considered in this report. In addition, only english reviews were used in the analysis. The `textcat` package was used to classify the language of the reviews. This package compares n-gram statistics between languages to make its decision. The aformentioned filtering allowed us to cut down the number of reviews to a total of 127,133 used in this analysis.
+A few steps were taken before the feature extraction phase. The reviews were joined with the listing table (a inner join on `listing_id = id`) and filtered to lie in the nine neighborhoods considered in this report. In addition, only English reviews were used in the analysis. The `textcat` package was used to classify the language of the reviews. This package compares n-gram statistics between languages to make its decision. The aforementioned filtering allowed us to cut down the number of reviews to a total of 127,133 used in this analysis.
 
 ## Feature Extraction
 
@@ -119,8 +119,8 @@ TF-IDF (term frequency - inverse document frequency) features were used in the f
 - Tokens were defined by the regex `\\b\\w\\w+\\b`. This expression defines a token as 2 or more alphanumeric characters (punctuation is completely ignored and always treated as a token separator).
 - All numbers were removed with the regex `\\d+`. It was assumed numbers would mostly correspond to prices, dates, and street numbers which were not of interest in this analysis.
 - All letters were converted to lowercase.
-- Tokens occuring in more than 80% of the document or less than 0.1% of the document were removed. The assumption is that they occur in too much or too little of the corpus to be discriminative. 
-- A list of common stop words (words like the, a, you, we) were removed from the corpus. In addition, the names of the neighborhoods as well as miss-spellings of the neighborhoods were removed from the corpus. This was done to avoid learning the name of the neighboorhood as the most important feature.
+- Tokens occurring in more than 80% of the document or less than 0.1% of the document were removed. The assumption is that they occur in too much or too little of the corpus to be discriminative. 
+- A list of common stop words (words like the, a, you, we) were removed from the corpus. In addition, the names of the neighborhoods as well as miss-spellings of the neighborhoods were removed from the corpus. This was done to avoid learning the name of the neighborhood as the most important feature.
 
 Once the text was cleaned, uni-grams and bi-grams were construct and transformed into tf-idf weights using the `text2vec` package. The following bar chart contains the top 30 most important uni-grams and bi-grams in the corpus:
 

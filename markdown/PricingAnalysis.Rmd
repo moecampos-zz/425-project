@@ -54,7 +54,9 @@ mod3 <- lm(price.bc ~ avail + num_reviews + rpm + nb + room_type, data = listing
 summary(mod3)
 ```
 
-Due to the transformation of price most of the interpretability of the coefficients on price is gone, but we can still interpret their effect on the transformed price. We can see, for example, that of all the Neighborhood dummy variables, San Marco has the most negative coefficient. This means that on average San Marco has the lowest transformed price, if the remaining variables remain constant. Since the transformation on price is the reciprical of price, this result translates to a Neighborhood with higher prices on average. For example, Lido has the most positive coefficient, so we would expect it, on average, to have the lowest prices. This observation is also backed up by the ANOVA presented in the previous section. Furthermore, we can observe this affect on neighborhood in the scatterplots of the predicted price vs. an other covariate. In particular, a scatterplot of Predicted Price vs. Reviews Per Month we can see a clear stratification of the prices by neighborhood:
+Due to the transformation of price most of the interpretability of the coefficients on price is gone, but we can still interpret their effect on the transformed price. We can see, for example, that of all the Neighborhood dummy variables, San Marco has the most negative coefficient. This means that on average San Marco has the lowest transformed price, if the remaining variables remain constant. Since the transformation on price is the reciprocal of price, this result translates to a Neighborhood with higher prices on average. For example, Lido has the most positive coefficient, so we would expect it, on average, to have the lowest prices. 
+
+This observation is also backed up by the ANOVA presented in the previous section. Furthermore, we can observe this affect on neighborhood in the scatterplots of the predicted price vs. an other covariate. In particular, a scatterplot of Predicted Price vs. Reviews Per Month we can see a clear stratification of the prices by neighborhood:
 
 ```{r scatter_plots, echo = FALSE}
 listings <- listings %>% 
@@ -68,3 +70,5 @@ ggplot(listings, aes(x = rpm, y = preds)) +
 ```
 
 San Marco in blue has a very high price independent of the co-variate, while Lido in green has a lower price.
+
+It is also important to note that the highest price estimated by the model is of \$`r round(max(fitted.values(mod3)^(-1/0.4)),2)`, which is lower than `r round(mean(listings$price > max(fitted.values(mod3)^(-1/0.4)))*100,2)`% of the original prices. In other words, the model is clearly underestimating the prices although not to a great extent. 
