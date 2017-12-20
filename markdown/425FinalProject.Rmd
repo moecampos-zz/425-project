@@ -1,5 +1,6 @@
 ---
-title: "Venice Pirates: 425 Final Project"
+title: "Venice Pirates"
+subtitle: "Fall 2017, 425 Final Project"
 author: "Mauricio Campos, Joshua Loyal, Austin Jay Warner"
 date: "12/19/2017"
 output: pdf_document

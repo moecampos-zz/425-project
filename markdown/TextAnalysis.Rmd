@@ -104,20 +104,20 @@ dtm <- tfidf_features(raw_documents)$train
 
 # Text Analysis
 
-The question posed by this analysis is the following: What are the important terms within the user reviews that can distinguish the nine Venetian neighborhoods? When choosing a location to stay the price is not the only determining factor. One may also want the location to be close to a landmark they plan to visit or be in a district know for a particular interest. For example, a neighborhood may be know for its restaurants. Therefore, a visitor who plans to do a lot sampling of local cuisine may want to book a room in this 'foody' neighborhood. In summery, the coefficients of a multinomial lasso trained on tf-idf features were used to determine the most important terms in the user reviews.
+The question posed by this section is the following: What are the important terms within the user reviews that can distinguish the nine Venetian neighborhoods? When choosing a location to stay the price is not the only determining factor. One may also want the location to be close to a landmark they plan to visit or be in a district know for a particular interest. For example, a neighborhood may be know for its restaurants. Therefore, a visitor who plans to do a lot sampling of local cuisine may want to book a room in the 'foody' neighborhood. In summery, the coefficients of a multinomial lasso trained on tf-idf features were used to determine the most important terms in the user reviews.
 
 ## Data Cleaning
 
-The raw data used in this analysis comprised of 216,295 multi-lingual user reviews of listings in Venice taken from the Inside Airbnb project. It should be noted that each listing could have multiple reviews. As far as data quality, some reviews are clearly spam coming from bots posting on Airbnb's website. Nothing was done to remove these reviews. They seemed to be only a small fraction of the total reviews and the final model does not seem affected by them.
+The raw data used in this analysis comprised of 216,295 multi-lingual user reviews of listings in Venice taken from the Inside Airbnb project. It should be noted that each listing could have multiple reviews. As far as data quality, some reviews are clearly spam coming from bots posting on Airbnb's website. Nothing was done to remove these reviews. They seemed to comprise only a small fraction of the total reviews and the final model does not seem affected by them.
 
 A few steps were taken before the feature extraction phase. The reviews were joined with the listing table (a inner join on `listing_id = id`) and filtered to lie in the nine neighborhoods considered in this report. In addition, only English reviews were used in the analysis. The `textcat` package was used to classify the language of the reviews. This package compares n-gram statistics between languages to make its decision. The aforementioned filtering allowed us to cut down the number of reviews to a total of 127,133 used in this analysis.
 
 ## Feature Extraction
 
-TF-IDF (term frequency - inverse document frequency) features were used in the final model. In order to construct these the corpus and to be cleaned and tokenized. We performed the following pre-processing on the corpus
+TF-IDF (term frequency - inverse document frequency) features were used in the final model. In order to construct these the corpus had to be cleaned and tokenized. In particular, we performed the following pre-processing on the corpus
 
-- Tokens were defined by the regex `\\b\\w\\w+\\b`. This expression defines a token as 2 or more alphanumeric characters (punctuation is completely ignored and always treated as a token separator).
-- All numbers were removed with the regex `\\d+`. It was assumed numbers would mostly correspond to prices, dates, and street numbers which were not of interest in this analysis.
+- Tokens were defined by the regexp `\\b\\w\\w+\\b`. This expression defines a token as 2 or more alphanumeric characters (punctuation is completely ignored and always treated as a token separator).
+- All numbers were removed with the regexp `\\d+`. It was assumed numbers would mostly correspond to prices, dates, and street numbers which were not of interest in this analysis.
 - All letters were converted to lowercase.
 - Tokens occurring in more than 80% of the document or less than 0.1% of the document were removed. The assumption is that they occur in too much or too little of the corpus to be discriminative. 
 - A list of common stop words (words like the, a, you, we) were removed from the corpus. In addition, the names of the neighborhoods as well as miss-spellings of the neighborhoods were removed from the corpus. This was done to avoid learning the name of the neighborhood as the most important feature.
@@ -138,7 +138,7 @@ tibble(term = names(norm_tfidf), importance = norm_tfidf) %>%
     ggthemes::theme_hc()
 ```
 
-The importance is given by the sum of the terms weigh across the whole corpus over the summation of all tf-idf weights. The terms look as you would expect from a review data of houses. Many terms describing the Airbnb listing (apartment, great, friendly, etc.).
+The importance is given by the sum of the terms weight across the whole corpus divided by the summation of all tf-idf weights. The terms look as you would expect from a corpus of house review data. Many terms describing the contents of the listings and the hosts (apartment, great, friendly, etc.).
 
 ## Modeling
 
@@ -157,4 +157,4 @@ text_model <- readRDS(here("data", "text_model.rds"))
 plot(text_model, 'Castello')
 ```
 
-One can see that the most important terms include: `arsenale`, `garibaldi`, and `zaccaria`. This corresponds to the Venetian Arsenal, the Via Garibaldi, and the San Zacarria which are various attractions in the area. Of course the model is not perfect. Names of various landlords as well as sites located in other neighborhoods are located in the word cloud. However, they tend to have smaller coefficients.
+One can see that the most important terms include: `arsenale`, `garibaldi`, and `zaccaria`. This corresponds to the Venetian Arsenal, the Via Garibaldi, and the San Zacarria which are various attractions in the area. Of course the model is not perfect. Names of various landlords as well as sites located in other neighborhoods are located in the word cloud. However, they tend to have smaller coefficients compared to the actual landmarks.
